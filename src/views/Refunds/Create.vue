@@ -1,180 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-/* VARIABLES */
-
-// DATOS DE LA VENTA
-const formSale = ref({
-    customer_id: '',
-    provider_id: '',
-    codigo: '',
-    fechaEmision: '',
-    metodoPago: '',
-    subTotal: '',
-    impuestos: '',
-    total: '',
-    descuento_global: '',
-    valor_descuentoGlobal: '',
-    descuento_total: '',
-    products: []
-});
-
-
-const data = ref([]);
-
-const formCustomer = ref({
-    tipoDocumento: '',
-    numeroDocumento: '',
-    NombreRazonSocial: '',
-    direccion: '',
-    telefono: '',
-    email: '',
-    departamento: '',
-    municipio: ''
-});
-
-const id = ref(route.params.id);
-const getDatos = () => {
-    if (route.name === 'Refunds-Invoices-Create') {
-        axios.get('/invoices/' + id.value).then(
-            response => {
-                formSale.value = response.data.invoice;
-                formSale.value.products = response.data.invoice.product_invoice;
-                formCustomer.value = response.data.invoice.provider;
-                cantidad.value = new Array(formSale.value.products.length).fill(0);
-
-                formSale.value.products.forEach((product, index) => {
-                    addProduct(product, index);
-                });
-            }
-        )
-    }
-    if (route.name === 'Refunds-Sales-Create') {
-        axios.get('/sales/' + id.value).then(
-            response => {
-                formSale.value = response.data.sale;
-                formSale.value.products = response.data.sale.product_sale;
-                formCustomer.value = response.data.sale.customer;
-                cantidad.value = new Array(formSale.value.products.length).fill(0);
-
-                formSale.value.products.forEach((product, index) => {
-                    addProduct(product, index);
-                });
-            }
-        )
-    }
-
-};
-
-const cantidad = ref([]);
-
-const addProduct = async (product, index) => {
-    const existingProductIndex = form.value.products.findIndex(p => p.product_id === product.id);
-    const Total = formSale.value.products[index].pivot.precio_total;
-    const cantidad_devolver = cantidad.value[index];
-
-    calcularTotalesProducto(product, index);
-
-    if (existingProductIndex !== -1) {
-        form.value.products[existingProductIndex].cantidad = cantidad_devolver;
-        form.value.products[existingProductIndex].precio_total = Total - data.value[index];
-    } else {
-        form.value.products.push({
-            product_id: product.id,
-            cantidad: cantidad_devolver,
-            precio_total: Total - data.value[index]
-        });
-    }
-
-    form.value.total = form.value.products.reduce((total, product) => {
-        return total + parseFloat(product.precio_total);
-    }, 0);
-};
-
-
-onMounted(() => { getDatos() });
-
-//CALCULAR
-
-const calcularTotalesVenta = () => {
-
-    formSale.value.descuento_total = formSale.value.products.reduce((total, product) => {
-        return total + parseFloat(product.pivot.valor_descuento);
-    }, 0);
-
-    formSale.value.impuestos = formSale.value.products.reduce((total, product) => {
-        return total + parseFloat(product.pivot.impuestos);
-    }, 0);
-
-    formSale.value.subTotal = formSale.value.products.reduce((total, product) => {
-        return total + parseFloat(product.pivot.subtotal);
-    }, 0);
-
-    const descuentoGlobal = parseFloat(formSale.value.descuento_global);
-    const descuentoGlobalValor = (formSale.value.subTotal * descuentoGlobal) / 100;
-
-    formSale.value.valor_descuentoGlobal = descuentoGlobalValor;
-
-    formSale.value.subTotal = formSale.value.subTotal - descuentoGlobalValor;
-
-    formSale.value.total = formSale.value.subTotal + formSale.value.impuestos;
-};
-
-
-const calcularTotalesProducto = (product, index) => {
-    const cantidadExacta = (product.pivot.cantidad - cantidad.value[index]);
-    const impuestos = (cantidadExacta * ((product.pivot.precio_unitario * product.iva_venta) / 100));
-    const valorDescuento = (((cantidadExacta * product.pivot.precio_unitario)) * product.pivot.descuento) / 100;
-    const subtotal = ((cantidadExacta * product.pivot.precio_unitario)) - valorDescuento;
-
-    product.pivot.impuestos = impuestos;
-    product.pivot.valor_descuento = valorDescuento;
-    product.pivot.subtotal = subtotal;
-    data.value[index] = subtotal + impuestos;
-
-    calcularTotalesVenta();
-};
-
-
-// METODO SAVE DE SALES
-
-const title = ref('');
-const form = ref({
-    sale_id: '',
-    invoice_id: '',
-    motivo: '',
-    fecha: new Date().toISOString().split('T')[0],
-    total: '',
-    products: []
-});
-
-if (route.name === 'Refunds-Invoices-Create') {
-    form.value.invoice_id = id.value;
-    formSale.value.provider_id = formSale.value.customer_id;
-    title.value = 'Realizar Devolución en Compra'
-} else if (route.name === 'Refunds-Sales-Create') {
-    form.value.sale_id = id.value;
-    formSale.value.customer_id = formSale.value.customer_id;
-    title.value = 'Realizar Devolución en Venta'
-}
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('POST', form.value, '/refunds', '/refunds');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">{{ title }}</h3>
@@ -467,3 +290,179 @@ const save = async () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+/* VARIABLES */
+
+// DATOS DE LA VENTA
+const formSale = ref({
+    customer_id: '',
+    provider_id: '',
+    codigo: '',
+    fechaEmision: '',
+    metodoPago: '',
+    subTotal: '',
+    impuestos: '',
+    total: '',
+    descuento_global: '',
+    valor_descuentoGlobal: '',
+    descuento_total: '',
+    products: []
+});
+
+
+const data = ref([]);
+
+const formCustomer = ref({
+    tipoDocumento: '',
+    numeroDocumento: '',
+    NombreRazonSocial: '',
+    direccion: '',
+    telefono: '',
+    email: '',
+    departamento: '',
+    municipio: ''
+});
+
+const id = ref(route.params.id);
+const getDatos = () => {
+    if (route.name === 'Refunds-Invoices-Create') {
+        axios.get('/invoices/' + id.value).then(
+            response => {
+                formSale.value = response.data.invoice;
+                formSale.value.products = response.data.invoice.product_invoice;
+                formCustomer.value = response.data.invoice.provider;
+                cantidad.value = new Array(formSale.value.products.length).fill(0);
+
+                formSale.value.products.forEach((product, index) => {
+                    addProduct(product, index);
+                });
+            }
+        )
+    }
+    if (route.name === 'Refunds-Sales-Create') {
+        axios.get('/sales/' + id.value).then(
+            response => {
+                formSale.value = response.data.sale;
+                formSale.value.products = response.data.sale.product_sale;
+                formCustomer.value = response.data.sale.customer;
+                cantidad.value = new Array(formSale.value.products.length).fill(0);
+
+                formSale.value.products.forEach((product, index) => {
+                    addProduct(product, index);
+                });
+            }
+        )
+    }
+
+};
+
+const cantidad = ref([]);
+
+const addProduct = async (product, index) => {
+    const existingProductIndex = form.value.products.findIndex(p => p.product_id === product.id);
+    const Total = formSale.value.products[index].pivot.precio_total;
+    const cantidad_devolver = cantidad.value[index];
+
+    calcularTotalesProducto(product, index);
+
+    if (existingProductIndex !== -1) {
+        form.value.products[existingProductIndex].cantidad = cantidad_devolver;
+        form.value.products[existingProductIndex].precio_total = Total - data.value[index];
+    } else {
+        form.value.products.push({
+            product_id: product.id,
+            cantidad: cantidad_devolver,
+            precio_total: Total - data.value[index]
+        });
+    }
+
+    form.value.total = form.value.products.reduce((total, product) => {
+        return total + parseFloat(product.precio_total);
+    }, 0);
+};
+
+
+onMounted(() => { getDatos() });
+
+//CALCULAR
+
+const calcularTotalesVenta = () => {
+
+    formSale.value.descuento_total = formSale.value.products.reduce((total, product) => {
+        return total + parseFloat(product.pivot.valor_descuento);
+    }, 0);
+
+    formSale.value.impuestos = formSale.value.products.reduce((total, product) => {
+        return total + parseFloat(product.pivot.impuestos);
+    }, 0);
+
+    formSale.value.subTotal = formSale.value.products.reduce((total, product) => {
+        return total + parseFloat(product.pivot.subtotal);
+    }, 0);
+
+    const descuentoGlobal = parseFloat(formSale.value.descuento_global);
+    const descuentoGlobalValor = (formSale.value.subTotal * descuentoGlobal) / 100;
+
+    formSale.value.valor_descuentoGlobal = descuentoGlobalValor;
+
+    formSale.value.subTotal = formSale.value.subTotal - descuentoGlobalValor;
+
+    formSale.value.total = formSale.value.subTotal + formSale.value.impuestos;
+};
+
+
+const calcularTotalesProducto = (product, index) => {
+    const cantidadExacta = (product.pivot.cantidad - cantidad.value[index]);
+    const impuestos = (cantidadExacta * ((product.pivot.precio_unitario * product.iva_venta) / 100));
+    const valorDescuento = (((cantidadExacta * product.pivot.precio_unitario)) * product.pivot.descuento) / 100;
+    const subtotal = ((cantidadExacta * product.pivot.precio_unitario)) - valorDescuento;
+
+    product.pivot.impuestos = impuestos;
+    product.pivot.valor_descuento = valorDescuento;
+    product.pivot.subtotal = subtotal;
+    data.value[index] = subtotal + impuestos;
+
+    calcularTotalesVenta();
+};
+
+
+// METODO SAVE DE SALES
+
+const title = ref('');
+const form = ref({
+    sale_id: '',
+    invoice_id: '',
+    motivo: '',
+    fecha: new Date().toISOString().split('T')[0],
+    total: '',
+    products: []
+});
+
+if (route.name === 'Refunds-Invoices-Create') {
+    form.value.invoice_id = id.value;
+    formSale.value.provider_id = formSale.value.customer_id;
+    title.value = 'Realizar Devolución en Compra'
+} else if (route.name === 'Refunds-Sales-Create') {
+    form.value.sale_id = id.value;
+    formSale.value.customer_id = formSale.value.customer_id;
+    title.value = 'Realizar Devolución en Venta'
+}
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('POST', form.value, '/refunds', '/refunds');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+</script>

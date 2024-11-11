@@ -1,43 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({
-    codigo: '',
-    descripcion: '',
-    precio: '',
-    iva_compra: '',
-    iva_venta: '',
-    marca: '',
-    categoria: '',
-    estado: ''
-});
-
-const id = ref(route.params.id);
-const getProducts = () => {
-    axios.get('/products/' + id.value).then(
-        response => (form.value = response.data)
-    )
-}
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('PUT', form.value, '/products/' + id.value, '/products');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-
-onMounted(() => { getProducts() });
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="text-2xl font-semibold text-gray-700">
@@ -254,3 +214,42 @@ onMounted(() => { getProducts() });
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({
+    codigo: '',
+    descripcion: '',
+    precio: '',
+    iva_compra: '',
+    iva_venta: '',
+    marca: '',
+    categoria: '',
+    estado: ''
+});
+
+const id = ref(route.params.id);
+const getProducts = () => {
+    axios.get('/products/' + id.value).then(
+        response => (form.value = response.data)
+    )
+}
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('PUT', form.value, '/products/' + id.value, '/products');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+
+onMounted(() => { getProducts() });
+</script>

@@ -1,35 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({ nombre: '', telefono: '', direccion: '', email: '' });
-
-const id = authStore.authUser.id;
-const getProfile = () => {
-    axios.get('/user/' + id).then(
-        response => (form.value = response.data)
-    )
-}
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('PUT', form.value, '/user/' + id, '');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-    if (status == 200) {
-        authStore.authUser = form.value;
-        await getProfile();
-    }
-}
-
-onMounted(() => { getProfile() });
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="text-2xl font-semibold text-gray-700">
@@ -149,3 +117,34 @@ onMounted(() => { getProfile() });
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({ nombre: '', telefono: '', direccion: '', email: '' });
+
+const id = authStore.authUser.id;
+const getProfile = () => {
+    axios.get('/user/' + id).then(
+        response => (form.value = response.data)
+    )
+}
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('PUT', form.value, '/user/' + id, '');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+    if (status == 200) {
+        authStore.authUser = form.value;
+        await getProfile();
+    }
+}
+
+onMounted(() => { getProfile() });
+</script>

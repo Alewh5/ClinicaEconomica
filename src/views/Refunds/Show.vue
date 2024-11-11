@@ -1,35 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const authStore = useAuthStore();
-onMounted(() => { getRefund() });
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({});
-const formProducts = ref({});
-const formSale = ref({});
-const formCustomer = ref({});
-let isValid = Boolean;
-
-const id = ref(route.params.id);
-const getRefund = () => {
-    axios.get('/refunds/' + id.value).then(response => {
-        form.value = response.data.refund.amount;
-        formProducts.value = response.data.refund;
-        formSale.value = response.data.relatedData;
-        if (response.data.relatedData.customer) {
-            formCustomer.value = response.data.relatedData.customer;
-        } else if (response.data.relatedData.provider) {
-            formCustomer.value = response.data.relatedData.provider;
-        }
-    });
-};
-
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">Devolucion Nº {{ form.id }}</h3>
@@ -255,3 +223,34 @@ const getRefund = () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const authStore = useAuthStore();
+onMounted(() => { getRefund() });
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({});
+const formProducts = ref({});
+const formSale = ref({});
+const formCustomer = ref({});
+let isValid = Boolean;
+
+const id = ref(route.params.id);
+const getRefund = () => {
+    axios.get('/refunds/' + id.value).then(response => {
+        form.value = response.data.refund.amount;
+        formProducts.value = response.data.refund;
+        formSale.value = response.data.relatedData;
+        if (response.data.relatedData.customer) {
+            formCustomer.value = response.data.relatedData.customer;
+        } else if (response.data.relatedData.provider) {
+            formCustomer.value = response.data.relatedData.provider;
+        }
+    });
+};
+
+</script>

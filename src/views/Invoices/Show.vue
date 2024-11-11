@@ -1,37 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const authStore = useAuthStore();
-onMounted(() => { getInvoice() });
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({});
-const hasRefunds = ref(false);
-
-const id = ref(route.params.id);
-const getInvoice = () => {
-    axios.get('/invoices/' + id.value).then(response => {
-        form.value = response.data.invoice,
-            hasRefunds.value = response.data.hasRefunds
-    })
-}
-
-const isTotalValid = () => {
-    if (!form.value.product_invoice) return false;
-
-    // Calculamos el total sumando `precio_total` de cada producto
-    const calculatedTotal = form.value.product_invoice.reduce((total, product) => {
-        return total + (parseFloat(product.pivot.precio_total) || 0);
-    }, 0);
-
-    // Comparamos el total calculado con el total en `form.value`
-    return calculatedTotal === parseFloat(form.value.total || 0);
-};
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -304,3 +270,36 @@ const isTotalValid = () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const authStore = useAuthStore();
+onMounted(() => { getInvoice() });
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({});
+const hasRefunds = ref(false);
+
+const id = ref(route.params.id);
+const getInvoice = () => {
+    axios.get('/invoices/' + id.value).then(response => {
+        form.value = response.data.invoice,
+            hasRefunds.value = response.data.hasRefunds
+    })
+}
+
+const isTotalValid = () => {
+    if (!form.value.product_invoice) return false;
+
+    // Calculamos el total sumando `precio_total` de cada producto
+    const calculatedTotal = form.value.product_invoice.reduce((total, product) => {
+        return total + (parseFloat(product.pivot.precio_total) || 0);
+    }, 0);
+
+    // Comparamos el total calculado con el total en `form.value`
+    return calculatedTotal === parseFloat(form.value.total || 0);
+};
+</script>

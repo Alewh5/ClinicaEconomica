@@ -1,42 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({
-    tipoDocumento: 'CC',
-    numeroDocumento: '',
-    NombreRazonSocial: '',
-    direccion: '',
-    telefono: '',
-    email: '',
-    departamento: '',
-    municipio: ''
-});
-
-const id = ref(route.params.id);
-const getCustomers = () => {
-    axios.get('/customers/' + id.value).then(
-        response => (form.value = response.data)
-    )
-}
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('PUT', form.value, '/customers/' + id.value, '');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-
-onMounted(() => { getCustomers() });
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="text-2xl font-semibold text-gray-700">
@@ -225,3 +186,41 @@ onMounted(() => { getCustomers() });
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({
+    tipoDocumento: 'CC',
+    numeroDocumento: '',
+    NombreRazonSocial: '',
+    direccion: '',
+    telefono: '',
+    email: '',
+    departamento: '',
+    municipio: ''
+});
+
+const id = ref(route.params.id);
+const getCustomers = () => {
+    axios.get('/customers/' + id.value).then(
+        response => (form.value = response.data)
+    )
+}
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('PUT', form.value, '/customers/' + id.value, '');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+
+onMounted(() => { getCustomers() });
+</script>

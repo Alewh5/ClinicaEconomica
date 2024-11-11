@@ -16,6 +16,7 @@ return new class extends Migration
 			$table->foreignId('company_id')->nullable();
 			$table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
             $table->string('nombre');
+            // $table->string('rol')->nullable();
 			$table->bigInteger('telefono')->nullable()->unsigned()->unique();
             $table->string('direccion')->nullable();
             $table->string('email')->unique();

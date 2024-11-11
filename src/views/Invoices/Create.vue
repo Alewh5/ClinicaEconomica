@@ -1,148 +1,3 @@
-<script setup>
-import { ref } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-/* VARIABLES */
-const form = ref({
-    provider_id: '',
-    codigo: '',
-    fechaEmision: new Date().toISOString().split('T')[0],
-    metodoPago: 'Efectivo',
-    subTotal: '',
-    impuestos: '',
-    total: '',
-    descuento_global: 0.00,
-    valor_descuentoGlobal: 0.00,
-    descuento_total: '',
-    products: []
-});
-
-const datalocal = ref([]);
-const proveedor = ref({});
-const searchProduct = ref('');
-const searchProvider = ref('');
-const productsFiltrados = ref([]);
-const providersFiltrados = ref([]);
-
-/* -------- ------------ ------------ ------------ */
-
-/* LISTAR PROVEEDORES */
-const searchProviders = async () => {
-    const response = await axios.get(`/providers?search=${searchProvider.value}`);
-    providersFiltrados.value = response.data.data;
-}
-
-const selectProvider = (provider) => {
-    form.value.provider_id = provider.id;
-    proveedor.value = provider;
-    searchProvider.value = '';
-
-    if (datalocal.value.length > 0) {
-        form.value.products.forEach(product => {
-            calcularPrecioTotal(product);
-        });
-    }
-}
-
-/* LISTAR PRODUCTOS */
-const searchProducts = async () => {
-    const response = await axios.get(`/searchProduct?search=${searchProduct.value}`);
-    productsFiltrados.value = response.data;
-}
-
-const addProduct = async (product) => {
-    const existingProductIndex = form.value.products.findIndex(p => p.product_id === product.id);
-
-    if (existingProductIndex !== -1) {
-        form.value.products[existingProductIndex].cantidad++;
-        await calcularPrecioTotal(form.value.products[existingProductIndex]);
-    } else {
-        form.value.products.push({
-            product_id: product.id,
-            cantidad: 1,
-            precio_unitario: '',
-            descuento: 0,
-            valor_descuento: '',
-            subtotal: '',
-            impuestos: '',
-            precio_total: '',
-        });
-
-        datalocal.value.push({
-            product_codigo: product.codigo,
-            product_descripcion: product.descripcion,
-            product_iva: product.iva_compra
-        });
-    }
-
-    console.log()
-    searchProduct.value = '';
-}
-
-const eliminarProducto = async (index) => {
-    form.value.products.splice(index, 1);
-    datalocal.value.splice(index, 1);
-
-    await calcularTotales();
-    await calcularPrecioTotal(form.value.products[existingProductIndex]);
-}
-
-/* CALCULOS */
-
-const calcularTotales = async () => {
-    form.value.descuento_total = form.value.products.reduce((total, product) => {
-        return total + product.valor_descuento;
-    }, 0);
-
-    form.value.impuestos = form.value.products.reduce((total, product) => {
-        return total + product.impuestos;
-    }, 0);
-
-    const subtotal = form.value.products.reduce((total, product) => {
-        return total + product.subtotal
-    }, 0);
-
-    const descuentoGlobal = form.value.descuento_global;
-    const descuentoGlobalValor = subtotal * (descuentoGlobal / 100);
-
-    form.value.valor_descuentoGlobal = descuentoGlobalValor;
-
-    form.value.subTotal = subtotal - descuentoGlobalValor;
-
-    form.value.total = form.value.subTotal + form.value.impuestos;
-}
-
-const calcularPrecioTotal = async (product) => {
-    const index = form.value.products.indexOf(product);
-
-    if (proveedor.value.responsable_iva == true) {
-        product.impuestos = ((product.cantidad * product.precio_unitario) * datalocal.value[index].product_iva) / 100;
-    } else {
-        product.impuestos = (product.precio_total * 0) / 100;
-    }
-    product.valor_descuento = (((product.cantidad * product.precio_unitario)) * product.descuento) / 100;
-    product.subtotal = ((product.cantidad * product.precio_unitario)) - product.valor_descuento;
-    product.precio_total = product.subtotal + product.impuestos;
-
-    await calcularTotales();
-}
-
-// METODO SAVE
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('POST', form.value, '/invoices', '/invoices');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -517,3 +372,147 @@ const save = async () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+/* VARIABLES */
+const form = ref({
+    provider_id: '',
+    codigo: '',
+    fechaEmision: new Date().toISOString().split('T')[0],
+    metodoPago: 'Efectivo',
+    subTotal: '',
+    impuestos: '',
+    total: '',
+    descuento_global: 0.00,
+    valor_descuentoGlobal: 0.00,
+    descuento_total: '',
+    products: []
+});
+
+const datalocal = ref([]);
+const proveedor = ref({});
+const searchProduct = ref('');
+const searchProvider = ref('');
+const productsFiltrados = ref([]);
+const providersFiltrados = ref([]);
+
+/* -------- ------------ ------------ ------------ */
+
+/* LISTAR PROVEEDORES */
+const searchProviders = async () => {
+    const response = await axios.get(`/providers?search=${searchProvider.value}`);
+    providersFiltrados.value = response.data.data;
+}
+
+const selectProvider = (provider) => {
+    form.value.provider_id = provider.id;
+    proveedor.value = provider;
+    searchProvider.value = '';
+
+    if (datalocal.value.length > 0) {
+        form.value.products.forEach(product => {
+            calcularPrecioTotal(product);
+        });
+    }
+}
+
+/* LISTAR PRODUCTOS */
+const searchProducts = async () => {
+    const response = await axios.get(`/searchProduct?search=${searchProduct.value}`);
+    productsFiltrados.value = response.data;
+}
+
+const addProduct = async (product) => {
+    const existingProductIndex = form.value.products.findIndex(p => p.product_id === product.id);
+
+    if (existingProductIndex !== -1) {
+        form.value.products[existingProductIndex].cantidad++;
+        await calcularPrecioTotal(form.value.products[existingProductIndex]);
+    } else {
+        form.value.products.push({
+            product_id: product.id,
+            cantidad: 1,
+            precio_unitario: '',
+            descuento: 0,
+            valor_descuento: '',
+            subtotal: '',
+            impuestos: '',
+            precio_total: '',
+        });
+
+        datalocal.value.push({
+            product_codigo: product.codigo,
+            product_descripcion: product.descripcion,
+            product_iva: product.iva_compra
+        });
+    }
+
+    console.log()
+    searchProduct.value = '';
+}
+
+const eliminarProducto = async (index) => {
+    form.value.products.splice(index, 1);
+    datalocal.value.splice(index, 1);
+
+    await calcularTotales();
+    await calcularPrecioTotal(form.value.products[existingProductIndex]);
+}
+
+/* CALCULOS */
+
+const calcularTotales = async () => {
+    form.value.descuento_total = form.value.products.reduce((total, product) => {
+        return total + product.valor_descuento;
+    }, 0);
+
+    form.value.impuestos = form.value.products.reduce((total, product) => {
+        return total + product.impuestos;
+    }, 0);
+
+    const subtotal = form.value.products.reduce((total, product) => {
+        return total + product.subtotal
+    }, 0);
+
+    const descuentoGlobal = form.value.descuento_global;
+    const descuentoGlobalValor = subtotal * (descuentoGlobal / 100);
+
+    form.value.valor_descuentoGlobal = descuentoGlobalValor;
+
+    form.value.subTotal = subtotal - descuentoGlobalValor;
+
+    form.value.total = form.value.subTotal + form.value.impuestos;
+}
+
+const calcularPrecioTotal = async (product) => {
+    const index = form.value.products.indexOf(product);
+
+    if (proveedor.value.responsable_iva == true) {
+        product.impuestos = ((product.cantidad * product.precio_unitario) * datalocal.value[index].product_iva) / 100;
+    } else {
+        product.impuestos = (product.precio_total * 0) / 100;
+    }
+    product.valor_descuento = (((product.cantidad * product.precio_unitario)) * product.descuento) / 100;
+    product.subtotal = ((product.cantidad * product.precio_unitario)) - product.valor_descuento;
+    product.precio_total = product.subtotal + product.impuestos;
+
+    await calcularTotales();
+}
+
+// METODO SAVE
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('POST', form.value, '/invoices', '/invoices');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+</script>

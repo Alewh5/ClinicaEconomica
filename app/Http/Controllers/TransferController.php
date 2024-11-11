@@ -13,9 +13,9 @@ class TransferController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
-		$perPage = $request->input('per_page', 5);
-		$transfers = Transfer::query();
+        $search 	= $request->input('search');
+		$perPage 	= $request->input('per_page', 5);
+		$transfers 	= Transfer::query();
 		
 		if ($search) {
 			$searchableFields = ['fecha_traslado', 'detalles'];

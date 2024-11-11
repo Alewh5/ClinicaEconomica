@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        $company = \App\Models\Company::create([
+        $company = \App\Models\Company::create([ // CREANDO USUARIO DE COMPAÑIA
             'nit' => 1005663635,
             'nombre' => 'ClinicaEconomica',
             'direccion' => 'Cra 10',
@@ -24,12 +24,19 @@ class DatabaseSeeder extends Seeder
 			'codigo_postal' => '503',
         ]);
 
-        $user = \App\Models\User::factory()->create([
+        $user = \App\Models\User::factory()->create([ // USUARIO ADMINISTRADOR
 			'company_id' => $company->id,
+            // 'rol' => 'admin', // rol administrador
             'nombre' => 'Mary ',
             'email' => 'walejandroh95@gmail.com',
             'password' => bcrypt('12345678'),
         ]);
-        
+        $user = \App\Models\User::factory()->create([ // USUARIO VENDEDOR
+			'company_id' => $company->id,
+            // 'rol' => 'vendedor', // rol administrador
+            'nombre' => 'Harold ',
+            'email' => 'haroldalexis1667@gmail.com',
+            'password' => bcrypt('Amanecerdel33'),
+        ]);
     }
 }

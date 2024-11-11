@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-			$table->enum('tipoDocumento', ['CC', 'CE', 'NIT', 'TI', 'PB']);
+			$table->enum('tipoDocumento', ['CC', 'CE', 'NIT', 'TI', 'PB']); // CAMBIAR A DUI
 			$table->bigInteger('numeroDocumento')->unique()->unsigned();
 			$table->string('NombreRazonSocial', 50);
 			$table->string('direccion')->nullable();

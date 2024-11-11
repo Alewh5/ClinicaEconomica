@@ -48,15 +48,15 @@ class MovementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-			'cellar_id' => 'required|exists:cellars,id',
-            'fecha' => 'required|date',
-            'tipoMovimiento' => 'required|boolean',
-            'concepto' => 'required',
-			'total' => 'required',
+			'cellar_id' 			=> 'required|exists:cellars,id',
+            'fecha' 				=> 'required|date',
+            'tipoMovimiento' 		=> 'required|boolean',
+            'concepto' 				=> 'required',
+			'total' 				=> 'required',
 			
-			'products' => 'required|array',
+			'products' 				=> 'required|array',
 			'products.*.product_id' => 'required|exists:products,id',
-            'products.*.cantidad' => 'required|numeric|gt:0',
+            'products.*.cantidad' 	=> 'required|numeric|gt:0',
 			'products.*.costo_unitario' => 'required|numeric|gte:0',
 			'products.*.costo_total' => 'required|numeric|gte:0',
         ]);

@@ -38,15 +38,15 @@ class ProviderController extends Controller
 	public function store(Request $request)
 	{
 		$request->validate([
-			'tipoDocumento' => 'required|in:CC,NIT,TI,PP',
-			'numeroDocumento' => 'required|unique:providers,numeroDocumento|numeric|gt:0',
+			'tipoDocumento' 	=> 'required|in:CC,NIT,TI,PP',
+			'numeroDocumento' 	=> 'required|unique:providers,numeroDocumento|numeric|gt:0',
 			'NombreRazonSocial' => 'required|max:50',
-			'direccion' => 'nullable|max:50',
-			'telefono' => 'required|unique:providers,telefono|numeric|gt:0',
-			'email' => 'required|email|unique:providers,email',
-			'departamento' => 'nullable',
-			'municipio' => 'nullable',
-			'responsable_iva' => 'required|boolean'
+			'direccion' 		=> 'nullable|max:50',
+			'telefono' 			=> 'required|unique:providers,telefono|numeric|gt:0',
+			'email' 			=> 'required|email|unique:providers,email',
+			'departamento' 		=> 'nullable',
+			'municipio' 		=> 'nullable',
+			'responsable_iva' 	=> 'required|boolean'
 		]);
 		
 		$provider = Provider::create($request->all());
@@ -59,15 +59,15 @@ class ProviderController extends Controller
 		$provider = Provider::find($id);
 		
 		$request->validate([
-			'tipoDocumento' => 'required|in:CC,NIT,TI,PP',
-			'numeroDocumento' => 'required|unique:providers,numeroDocumento,'. $provider->id,
+			'tipoDocumento' 	=> 'required|in:CC,NIT,TI,PP',
+			'numeroDocumento' 	=> 'required|unique:providers,numeroDocumento,'. $provider->id,
 			'NombreRazonSocial' => 'required',
-			'direccion' => 'nullable|max:50',
-			'telefono' => 'required|unique:providers,telefono,'. $provider->id,
-			'email' => 'required|email|unique:providers,email,'. $provider->id,
-			'departamento' => 'nullable',
-			'municipio' => 'nullable',
-			'responsable_iva' => 'required|boolean'
+			'direccion' 		=> 'nullable|max:50',
+			'telefono' 			=> 'required|unique:providers,telefono,'. $provider->id,
+			'email' 			=> 'required|email|unique:providers,email,'. $provider->id,
+			'departamento' 		=> 'nullable',
+			'municipio' 		=> 'nullable',
+			'responsable_iva' 	=> 'required|boolean'
 		]);
 		
 		$provider->update($request->all());

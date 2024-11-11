@@ -121,14 +121,14 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'codigo' => 'required|unique:products',
-            'descripcion' => 'required',
-            'precio' => 'required',
-            'iva_compra' => 'required',
-            'iva_venta' => 'required',
-            'marca' => 'nullable',
-            'categoria' => 'nullable',
-            'estado' => 'nullable|in:activo,descontinuado,en espera'
+            'codigo'        => 'required|unique:products',
+            'descripcion'   => 'required',
+            'precio'        => 'required',
+            'iva_compra'    => 'required',
+            'iva_venta'     => 'required',
+            'marca'         => 'nullable',
+            'categoria'     => 'nullable',
+            'estado'        => 'nullable|in:activo,descontinuado,en espera'
         ]);
 
         if (Cellar::count() === 0) {
@@ -154,14 +154,14 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         $request->validate([
-            'codigo' => 'unique:products,codigo,' . $product->id,
-            'descripcion' => 'required',
-            'precio' => 'required',
-            'iva_compra' => 'required',
-            'iva_venta' => 'required',
-            'marca' => 'nullable',
-            'categoria' => 'nullable',
-            'estado' => 'nullable|in:activo,descontinuado,en espera'
+            'codigo'        => 'unique:products,codigo,' . $product->id,
+            'descripcion'   => 'required',
+            'precio'        => 'required',
+            'iva_compra'    => 'required',
+            'iva_venta'     => 'required',
+            'marca'         => 'nullable',
+            'categoria'     => 'nullable',
+            'estado'        => 'nullable|in:activo,descontinuado,en espera'
         ]);
 
         $product->update($request->all());

@@ -1,54 +1,3 @@
-<script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const authStore = useAuthStore();
-onMounted(() => { getSale() });
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({});
-const hasRefunds = ref(false);
-
-const id = ref(route.params.id);
-const getSale = () => {
-    axios.get('/sales/' + id.value).then(response => {
-        form.value = response.data.sale;
-        hasRefunds.value = response.data.hasRefunds;
-    });
-};
-
-
-const isTotalValid = () => {
-    if (!form.value.product_sale) return false;
-
-    // Calculamos el total sumando `precio_total` de cada producto
-    const calculatedTotal = form.value.product_sale.reduce((total, product) => {
-        return total + (parseFloat(product.pivot.precio_total) || 0);
-    }, 0);
-
-    // Comparamos el total calculado con el total en `form.value`
-    return calculatedTotal === parseFloat(form.value.total || 0);
-};
-
-const openPDF = () => {
-    axios({
-        url: `/sales/${id.value}/pdf`,
-        method: 'GET',
-        responseType: 'blob',
-    }).then((response) => {
-        const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-        const printWindow = window.open(fileURL);
-
-        setTimeout(() => {
-            printWindow.print();
-        }, 500);
-    });
-};
-
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -330,3 +279,53 @@ const openPDF = () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const authStore = useAuthStore();
+onMounted(() => { getSale() });
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({});
+const hasRefunds = ref(false);
+
+const id = ref(route.params.id);
+const getSale = () => {
+    axios.get('/sales/' + id.value).then(response => {
+        form.value = response.data.sale;
+        hasRefunds.value = response.data.hasRefunds;
+    });
+};
+
+
+const isTotalValid = () => {
+    if (!form.value.product_sale) return false;
+
+    // Calculamos el total sumando `precio_total` de cada producto
+    const calculatedTotal = form.value.product_sale.reduce((total, product) => {
+        return total + (parseFloat(product.pivot.precio_total) || 0);
+    }, 0);
+
+    // Comparamos el total calculado con el total en `form.value`
+    return calculatedTotal === parseFloat(form.value.total || 0);
+};
+
+const openPDF = () => {
+    axios({
+        url: `/sales/${id.value}/pdf`,
+        method: 'GET',
+        responseType: 'blob',
+    }).then((response) => {
+        const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        const printWindow = window.open(fileURL);
+
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+    });
+};
+
+</script>

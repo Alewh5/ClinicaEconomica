@@ -38,14 +38,14 @@ class CustomerController extends Controller
 	public function store(Request $request)
 	{
 		$request->validate([
-			'tipoDocumento' => 'required|in:CC,CE,NIT,TI,PB',
-			'numeroDocumento' => 'required|unique:customers,numeroDocumento|numeric|gt:0',
-			'NombreRazonSocial' => 'required|max:50',
-			'direccion' => 'nullable|max:50',
-			'telefono' => 'required|unique:customers,telefono|numeric|gt:0',
-			'email' => 'required|email|unique:customers,email',
-			'departamento' => 'nullable|max:30',
-			'municipio' => 'nullable|max:30',
+			'tipoDocumento' 		=> 'required|in:CC,CE,NIT,TI,PB', // CAMBIAR A DUI
+			'numeroDocumento' 		=> 'required|unique:customers,numeroDocumento|numeric|gt:0',
+			'NombreRazonSocial' 	=> 'required|max:50',
+			'direccion' 			=> 'nullable|max:50',
+			'telefono' 				=> 'required|unique:customers,telefono|numeric|gt:0',
+			'email' 				=> 'required|email|unique:customers,email',
+			'departamento' 			=> 'nullable|max:30',
+			'municipio' 			=> 'nullable|max:30',
 		]);
 		
 		$customer = Customer::create($request->all());
@@ -58,14 +58,14 @@ class CustomerController extends Controller
 		$customer = Customer::find($id);
 		
 		$request->validate([
-			'tipoDocumento' => 'required|in:CC,NIT,TI,PP',
-			'numeroDocumento' => 'required|gt:0|unique:customers,numeroDocumento,' . $customer->id,
-			'NombreRazonSocial' => 'required|max:50',
-			'direccion' => 'nullable|max:50',
-			'telefono' => 'required|gt:0|unique:customers,telefono,'. $customer->id,
-			'email' => 'required|email|unique:customers,email,'. $customer->id,
-			'departamento' => 'nullable|max:30',
-			'municipio' => 'nullable|max:30',
+			'tipoDocumento' 		=> 'required|in:CC,NIT,TI,PP', // DUI
+			'numeroDocumento' 		=> 'required|gt:0|unique:customers,numeroDocumento,' . $customer->id,
+			'NombreRazonSocial' 	=> 'required|max:50',
+			'direccion' 			=> 'nullable|max:50',
+			'telefono' 				=> 'required|gt:0|unique:customers,telefono,'. $customer->id,
+			'email' 				=> 'required|email|unique:customers,email,'. $customer->id,
+			'departamento' 			=> 'nullable|max:30',
+			'municipio' 			=> 'nullable|max:30',
 		]);
 		
 		$customer->update($request->all());

@@ -21,10 +21,10 @@ class PaymentController extends Controller
 	public function store(Request $request)
 	{
 		$request->validate([
-			'monto' => 'required|numeric|gte:0',
-			'fecha' => 'required|date',
-			'sale_id' => 'required_without:invoice_id|exists:sales,id',
-			'invoice_id' => 'required_without:sale_id|exists:invoices,id',
+			'monto' 		=> 'required|numeric|gte:0',
+			'fecha' 		=> 'required|date',
+			'sale_id' 		=> 'required_without:invoice_id|exists:sales,id',
+			'invoice_id' 	=> 'required_without:sale_id|exists:invoices,id',
 		]);
 		
 		DB::beginTransaction();
@@ -73,10 +73,10 @@ class PaymentController extends Controller
 			}
 			
 			$payment = new Payment([
-				'monto' => $request->monto,
-				'fecha' => $request->fecha,
-				'sale_id' => $request->sale_id ?? null,
-				'invoice_id' => $request->invoice_id ?? null,
+				'monto' 		=> $request->monto,
+				'fecha' 		=> $request->fecha,
+				'sale_id' 		=> $request->sale_id ?? null,
+				'invoice_id' 	=> $request->invoice_id ?? null,
 			]);
 
 			$payment->save();

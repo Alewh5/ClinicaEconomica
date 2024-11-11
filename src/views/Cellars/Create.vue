@@ -1,22 +1,3 @@
-<script setup>
-import { ref } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({ company_id: authStore.user.company_id, nombre: '', ubicacion: '', detalles: '' });
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('POST', form.value, '/cellars', '/cellars');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -118,3 +99,21 @@ const save = async () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({ company_id: authStore.user.company_id, nombre: '', ubicacion: '', detalles: '' });
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('POST', form.value, '/cellars', '/cellars');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+</script>

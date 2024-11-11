@@ -1,32 +1,3 @@
-<script setup>
-import { ref } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({
-    tipoDocumento: 'CC',
-    numeroDocumento: '',
-    NombreRazonSocial: '',
-    direccion: '',
-    telefono: '',
-    email: '',
-    departamento: '',
-    municipio: '',
-    responsable_iva: 1
-});
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('POST', form.value, '/providers', '/providers');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -257,3 +228,31 @@ const save = async () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({
+    tipoDocumento: 'CC',
+    numeroDocumento: '',
+    NombreRazonSocial: '',
+    direccion: '',
+    telefono: '',
+    email: '',
+    departamento: '',
+    municipio: '',
+    responsable_iva: 1
+});
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('POST', form.value, '/providers', '/providers');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+</script>

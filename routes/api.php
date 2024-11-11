@@ -18,23 +18,13 @@ use App\Models\Budget_movement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-    1 - Respuestas informativas (100–199),
-    2 - Respuestas satisfactorias (200–299),
-    3 - Redirecciones (300–399),
-    4 - Errores de los clientes (400–499),
-    5 - errores de los servidores (500–599).
-*/
-
-
-
 Route::group(['prefix' => 'v1'], function () {
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/logout', [AuthController::class, 'logout']);
 		
 		/* GESTIÓN DE INVENTARIO */
 		
-        //COMPANY
+        //Compañia
         Route::get('companies/{id}', [CompanyController::class, 'show']);
         Route::put('companies/{id}', [CompanyController::class, 'update']);
 
@@ -42,11 +32,11 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('budgets', [BudgetMovementController::class, 'index']);
         Route::post('budgets', [BudgetMovementController::class, 'store']);
 
-        //USER
+        // usuarios
         Route::get('user/{id}', [UserController::class, 'show']);
 		Route::put('user/{id}', [UserController::class, 'update']);
 		
-		//CELLARS
+		// vendedores
 		Route::get('cellars', [CellarController::class, 'index']);
 		Route::get('cellars/{id}', [CellarController::class, 'show']);
 		Route::post('cellars', [CellarController::class, 'store']);
@@ -54,7 +44,7 @@ Route::group(['prefix' => 'v1'], function () {
 		Route::post('cellars/{id}', [CellarController::class, 'default']);
 		Route::delete('cellars/{id}', [CellarController::class, 'destroy']);
 
-        //PRODUCTS
+        // productos
         Route::get('products', [ProductController::class, 'index']);
         Route::get('searchProduct', [ProductController::class, 'searchProduct']);
         Route::get('products/{id}', [ProductController::class, 'show']);
@@ -62,50 +52,50 @@ Route::group(['prefix' => 'v1'], function () {
 		Route::put('products/{id}', [ProductController::class, 'update']);
         Route::delete('products/{id}', [ProductController::class, 'destroy']);
 		
-		//TRANSFERS
+		// transfer
 		Route::get('transfers', [TransferController::class, 'index']);
 		Route::get('transfers/{id}', [TransferController::class, 'show']);
 		Route::post('transfers', [transferController::class, 'store']);
 
-        //MOVEMENTS
+        // mov
         Route::get('movements', [MovementController::class, 'index']);
         Route::get('movements/{id}', [MovementController::class, 'show']);
         Route::post('movements', [MovementController::class, 'store']);
 		
 		/* PUNTO DE VENTA */
 		
-		//PROVIDERS
+		// Proveedores
 		Route::get('providers', [ProviderController::class, 'index']);
 		Route::get('providers/{id}', [ProviderController::class, 'show']);
 		Route::post('providers', [ProviderController::class, 'store']);
 		Route::put('providers/{id}', [ProviderController::class, 'update']);
 		Route::delete('providers/{id}', [ProviderController::class, 'destroy']);
 		
-		//INVOICES
+		// INVOICES
 		Route::get('invoices', [InvoiceController::class, 'index']);
 		Route::get('invoices/{id}', [InvoiceController::class, 'show']);		
 		Route::post('invoices', [InvoiceController::class, 'store']);
 		
-		//CUSTOMER
+		// CUSTOMER
 		Route::get('customers', [CustomerController::class, 'index']);
 		Route::get('customers/{id}', [CustomerController::class, 'show']);
 		Route::post('customers', [CustomerController::class, 'store']);
 		Route::put('customers/{id}', [CustomerController::class, 'update']);
 		Route::delete('customers/{id}', [CustomerController::class, 'destroy']);
 		
-		//SALES
+		// SALES
 		Route::get('sales', [SaleController::class, 'index']);
 		Route::get('sales/{id}', [SaleController::class, 'show']);
 		Route::post('sales', [SaleController::class, 'store']);
 		Route::get('sales/{id}/pdf', [SaleController::class, 'generatePDF']);
 
 		
-		//REFUNDS
+		// REFUNDS
 		Route::get('refunds', [RefundController::class, 'index']);
 		Route::get('refunds/{id}', [RefundController::class, 'show']);
 		Route::post('refunds', [RefundController::class, 'store']);
 		
-		//PAYMENTS
+		// PAYMENTS
 		Route::get('payments', [PaymentController::class, 'index']);
 		Route::post('payments', [PaymentController::class, 'store']);
     });

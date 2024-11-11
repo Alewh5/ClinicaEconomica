@@ -38,10 +38,10 @@ class CellarController extends Controller
 	public function store(Request $request)
     {
         $request->validate([
-            'company_id' => 'required|integer',
-            'nombre' => 'required',
-            'ubicacion' => 'required',
-            'detalles' => 'nullable',
+            'company_id' 	=> 'required|integer',
+            'nombre' 		=> 'required',
+            'ubicacion' 	=> 'required',
+            'detalles' 		=> 'nullable',
         ]);
 
         $cellar = Cellar::create($request->all());
@@ -58,10 +58,10 @@ class CellarController extends Controller
 	public function update(Request $request, $id)
 	{
 		$request->validate([
-            'company_id' => 'required|integer',
-            'nombre' => 'required',
-            'ubicacion' => 'required',
-            'detalles' => 'nullable',
+            'company_id' 	=> 'required|integer',
+            'nombre' 		=> 'required',
+            'ubicacion' 	=> 'required',
+            'detalles' 		=> 'nullable',
         ]);
 		
 		Cellar::find($id)->update($request->all());

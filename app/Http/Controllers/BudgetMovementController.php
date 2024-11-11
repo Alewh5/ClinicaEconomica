@@ -33,11 +33,11 @@ class BudgetMovementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'company_id' => 'required|exists:companies,id',
-            'fecha' => 'required',
-            'tipoMovimiento' => 'required',
-            'concepto' => 'required',
-            'monto' => 'required',
+            'company_id'        => 'required|exists:companies,id',
+            'fecha'             => 'required',
+            'tipoMovimiento'    => 'required',
+            'concepto'          => 'required',
+            'monto'             => 'required',
         ]);
 		
 		$company = Company::find($request->company_id);

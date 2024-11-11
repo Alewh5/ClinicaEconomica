@@ -1,222 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-import Swal from "sweetalert2";
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-/* VARIABLES */
-const form = ref({
-    customer_id: '',
-    codigo: '',
-    fechaEmision: new Date().toISOString().split('T')[0],
-    metodoPago: 'Efectivo',
-    subTotal: '',
-    impuestos: '',
-    total: '',
-    descuento_global: 0.00,
-    valor_descuentoGlobal: 0.00,
-    descuento_total: '',
-    products: []
-});
-
-
-/* CLIENTES */
-const viewCustomer = ref(false);
-
-const toggleForm = () => {
-    viewCustomer.value = !viewCustomer.value;
-};
-
-const formCustomer = ref({
-    tipoDocumento: 'CC',
-    numeroDocumento: '',
-    NombreRazonSocial: '',
-    email: '',
-    telefono: ''
-});
-
-const formErrorsCustomers = ref({});
-const saveCustomer = async () => {
-    const { status, list_errors, error, responseData } = await sendRequest('POST', formCustomer.value, '/customers', '');
-    if (status == 422) {
-        formErrorsCustomers.value = list_errors;
-    }
-    if (status == 201) {
-        form.value.customer_id = responseData.customer.id;
-        cliente.value = responseData.customer; lime
-        viewCustomer.value = false
-        formCustomer.value = {
-            tipoDocumento: 'CC',
-            numeroDocumento: '',
-            NombreRazonSocial: '',
-            email: '',
-            telefono: ''
-        };
-    }
-}
-
-/* CODIGO GENERICO */
-const codigo = async () => {
-    const response = await axios.get(`/sales?page=1`);
-    if (response.data.data.length > 0) {
-        const numero = response.data.data[0].codigo.split('-')[1];
-        const longitud = numero.length;
-        const codigoFactura = `VTN-${(parseInt(numero) + 1).toString().padStart(longitud, '0')}`;
-        form.value.codigo = codigoFactura;
-    } else {
-        form.value.codigo = 'VTN-0001';
-    }
-};
-
-onMounted(() => { codigo() });
-
-const datalocal = ref([]);
-const cliente = ref({});
-const searchProduct = ref('');
-const searchCustomer = ref('');
-const productsFiltrados = ref([]);
-const customerFilters = ref([]);
-
-/* -------- ------------ ------------ ------------ */
-
-/* LISTAR CLIENTES */
-const searchCustomers = async () => {
-    const response = await axios.get(`/customers?search=${searchCustomer.value}`);
-    customerFilters.value = response.data.data;
-}
-
-const selectCustomer = (customer) => {
-    form.value.customer_id = customer.id;
-    cliente.value = customer;
-    searchCustomer.value = '';
-}
-
-/* LISTAR PRODUCTOS */
-const searchProducts = async () => {
-    const response = await axios.get(`/searchProduct?search=${searchProduct.value}`);
-    productsFiltrados.value = response.data;
-}
-
-const addProduct = async (product) => {
-    const existingProductIndex = form.value.products.findIndex(p => p.product_id === product.id);
-
-    if (existingProductIndex !== -1) {
-        form.value.products[existingProductIndex].cantidad++;
-        await calcularPrecioTotal(form.value.products[existingProductIndex]);
-    } else {
-        form.value.products.push({
-            product_id: product.id,
-            cantidad: 1,
-            precio_unitario: product.precio,
-            descuento: 0,
-            valor_descuento: '',
-            subtotal: '',
-            impuestos: '',
-            precio_total: '',
-        });
-
-        datalocal.value.push({
-            product_codigo: product.codigo,
-            product_descripcion: product.descripcion,
-            product_iva: product.iva_venta
-        });
-
-        await calcularPrecioTotal(form.value.products[form.value.products.length - 1]);
-    }
-    searchProduct.value = '';
-}
-
-const eliminarProducto = async (index) => {
-    form.value.products.splice(index, 1);
-    datalocal.value.splice(index, 1);
-
-    await calcularTotales();
-    await calcularPrecioTotal(form.value.products[existingProductIndex]);
-}
-
-/* CALCULOS */
-
-const calcularTotales = async () => {
-    form.value.descuento_total = form.value.products.reduce((total, product) => {
-        return total + product.valor_descuento;
-    }, 0);
-
-    form.value.impuestos = form.value.products.reduce((total, product) => {
-        return total + product.impuestos;
-    }, 0);
-
-    const subtotal = form.value.products.reduce((total, product) => {
-        return total + product.subtotal
-    }, 0);
-
-    const descuentoGlobal = form.value.descuento_global;
-    const descuentoGlobalValor = subtotal * (descuentoGlobal / 100);
-
-    form.value.valor_descuentoGlobal = descuentoGlobalValor;
-
-    form.value.subTotal = subtotal - descuentoGlobalValor;
-
-    form.value.total = form.value.subTotal + form.value.impuestos;
-}
-
-const calcularPrecioTotal = async (product) => {
-    const index = form.value.products.indexOf(product);
-    product.impuestos = ((product.cantidad * product.precio_unitario) * datalocal.value[index].product_iva) / 100;
-    product.valor_descuento = (((product.cantidad * product.precio_unitario)) * product.descuento) / 100;
-    product.subtotal = ((product.cantidad * product.precio_unitario)) - product.valor_descuento;
-    product.precio_total = product.subtotal + product.impuestos;
-
-    await calcularTotales();
-}
-
-// METODO SAVE DE SALES
-
-const openAlert = (form) => {
-    Swal.fire({
-        title: 'Ingrese el monto a pagar',
-        html: `
-            <input id="monto" autocomplete="off"
-            class="w-full bg-white rounded-r-md pl-2 text-base font-regular outline-0">
-            <div id="vuelto" class="text-gray-600 mt-2"></div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        cancelButtonText: 'Cancelar',
-        didOpen: () => {
-            const montoInput = document.getElementById('monto');
-            const vueltoDisplay = document.getElementById('vuelto');
-
-            montoInput.addEventListener('input', () => {
-                const monto = parseFloat(montoInput.value);
-                const totalFactura = parseFloat(form.total);
-                const vuelto = monto - totalFactura;
-                vueltoDisplay.textContent = vuelto >= 0 ? `Vuelto: ${vuelto}` : 'Monto insuficiente';
-            });
-        },
-        preConfirm: () => {
-            const monto = parseFloat(document.getElementById('monto').value);
-            return monto;
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            save();
-        }
-    });
-};
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('POST', form.value, '/sales', '/sales');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -741,3 +522,221 @@ const save = async () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+import Swal from "sweetalert2";
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+/* VARIABLES */
+const form = ref({
+    customer_id: '',
+    codigo: '',
+    fechaEmision: new Date().toISOString().split('T')[0],
+    metodoPago: 'Efectivo',
+    subTotal: '',
+    impuestos: '',
+    total: '',
+    descuento_global: 0.00,
+    valor_descuentoGlobal: 0.00,
+    descuento_total: '',
+    products: []
+});
+
+
+/* CLIENTES */
+const viewCustomer = ref(false);
+
+const toggleForm = () => {
+    viewCustomer.value = !viewCustomer.value;
+};
+
+const formCustomer = ref({
+    tipoDocumento: 'CC',
+    numeroDocumento: '',
+    NombreRazonSocial: '',
+    email: '',
+    telefono: ''
+});
+
+const formErrorsCustomers = ref({});
+const saveCustomer = async () => {
+    const { status, list_errors, error, responseData } = await sendRequest('POST', formCustomer.value, '/customers', '');
+    if (status == 422) {
+        formErrorsCustomers.value = list_errors;
+    }
+    if (status == 201) {
+        form.value.customer_id = responseData.customer.id;
+        cliente.value = responseData.customer; lime
+        viewCustomer.value = false
+        formCustomer.value = {
+            tipoDocumento: 'CC',
+            numeroDocumento: '',
+            NombreRazonSocial: '',
+            email: '',
+            telefono: ''
+        };
+    }
+}
+
+/* CODIGO GENERICO */
+const codigo = async () => {
+    const response = await axios.get(`/sales?page=1`);
+    if (response.data.data.length > 0) {
+        const numero = response.data.data[0].codigo.split('-')[1];
+        const longitud = numero.length;
+        const codigoFactura = `VTN-${(parseInt(numero) + 1).toString().padStart(longitud, '0')}`;
+        form.value.codigo = codigoFactura;
+    } else {
+        form.value.codigo = 'VTN-0001';
+    }
+};
+
+onMounted(() => { codigo() });
+
+const datalocal = ref([]);
+const cliente = ref({});
+const searchProduct = ref('');
+const searchCustomer = ref('');
+const productsFiltrados = ref([]);
+const customerFilters = ref([]);
+
+/* -------- ------------ ------------ ------------ */
+
+/* LISTAR CLIENTES */
+const searchCustomers = async () => {
+    const response = await axios.get(`/customers?search=${searchCustomer.value}`);
+    customerFilters.value = response.data.data;
+}
+
+const selectCustomer = (customer) => {
+    form.value.customer_id = customer.id;
+    cliente.value = customer;
+    searchCustomer.value = '';
+}
+
+/* LISTAR PRODUCTOS */
+const searchProducts = async () => {
+    const response = await axios.get(`/searchProduct?search=${searchProduct.value}`);
+    productsFiltrados.value = response.data;
+}
+
+const addProduct = async (product) => {
+    const existingProductIndex = form.value.products.findIndex(p => p.product_id === product.id);
+
+    if (existingProductIndex !== -1) {
+        form.value.products[existingProductIndex].cantidad++;
+        await calcularPrecioTotal(form.value.products[existingProductIndex]);
+    } else {
+        form.value.products.push({
+            product_id: product.id,
+            cantidad: 1,
+            precio_unitario: product.precio,
+            descuento: 0,
+            valor_descuento: '',
+            subtotal: '',
+            impuestos: '',
+            precio_total: '',
+        });
+
+        datalocal.value.push({
+            product_codigo: product.codigo,
+            product_descripcion: product.descripcion,
+            product_iva: product.iva_venta
+        });
+
+        await calcularPrecioTotal(form.value.products[form.value.products.length - 1]);
+    }
+    searchProduct.value = '';
+}
+
+const eliminarProducto = async (index) => {
+    form.value.products.splice(index, 1);
+    datalocal.value.splice(index, 1);
+
+    await calcularTotales();
+    await calcularPrecioTotal(form.value.products[existingProductIndex]);
+}
+
+/* CALCULOS */
+
+const calcularTotales = async () => {
+    form.value.descuento_total = form.value.products.reduce((total, product) => {
+        return total + product.valor_descuento;
+    }, 0);
+
+    form.value.impuestos = form.value.products.reduce((total, product) => {
+        return total + product.impuestos;
+    }, 0);
+
+    const subtotal = form.value.products.reduce((total, product) => {
+        return total + product.subtotal
+    }, 0);
+
+    const descuentoGlobal = form.value.descuento_global;
+    const descuentoGlobalValor = subtotal * (descuentoGlobal / 100);
+
+    form.value.valor_descuentoGlobal = descuentoGlobalValor;
+
+    form.value.subTotal = subtotal - descuentoGlobalValor;
+
+    form.value.total = form.value.subTotal + form.value.impuestos;
+}
+
+const calcularPrecioTotal = async (product) => {
+    const index = form.value.products.indexOf(product);
+    product.impuestos = ((product.cantidad * product.precio_unitario) * datalocal.value[index].product_iva) / 100;
+    product.valor_descuento = (((product.cantidad * product.precio_unitario)) * product.descuento) / 100;
+    product.subtotal = ((product.cantidad * product.precio_unitario)) - product.valor_descuento;
+    product.precio_total = product.subtotal + product.impuestos;
+
+    await calcularTotales();
+}
+
+// METODO SAVE DE SALES
+
+const openAlert = (form) => {
+    Swal.fire({
+        title: 'Ingrese el monto a pagar',
+        html: `
+            <input id="monto" autocomplete="off"
+            class="w-full bg-white rounded-r-md pl-2 text-base font-regular outline-0">
+            <div id="vuelto" class="text-gray-600 mt-2"></div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        didOpen: () => {
+            const montoInput = document.getElementById('monto');
+            const vueltoDisplay = document.getElementById('vuelto');
+
+            montoInput.addEventListener('input', () => {
+                const monto = parseFloat(montoInput.value);
+                const totalFactura = parseFloat(form.total);
+                const vuelto = monto - totalFactura;
+                vueltoDisplay.textContent = vuelto >= 0 ? `Vuelto: ${vuelto}` : 'Monto insuficiente';
+            });
+        },
+        preConfirm: () => {
+            const monto = parseFloat(document.getElementById('monto').value);
+            return monto;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            save();
+        }
+    });
+};
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('POST', form.value, '/sales', '/sales');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+</script>

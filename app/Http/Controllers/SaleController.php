@@ -41,26 +41,26 @@ class SaleController extends Controller
 	{
 		//VALIDACIONES
 		$request->validate([
-			'customer_id' => 'required|exists:customers,id',
-			'codigo' => 'required|unique:sales,codigo',
-			'fechaEmision' => 'required|date',
-			'metodoPago' => 'required|in:Efectivo,Nequi,Tarjeta,Credito',
-			'subTotal' => 'required|numeric|gte:0',
-			'impuestos' => 'required|numeric|gte:0',
-			'total' => 'required|numeric|gte:0',
-			'descuento_global' => 'required|numeric|gte:0',
+			'customer_id' 		=> 'required|exists:customers,id',
+			'codigo' 			=> 'required|unique:sales,codigo',
+			'fechaEmision' 		=> 'required|date',
+			'metodoPago' 		=> 'required|in:Efectivo,Nequi,Tarjeta,Credito',
+			'subTotal' 			=> 'required|numeric|gte:0',
+			'impuestos' 		=> 'required|numeric|gte:0',
+			'total' 			=> 'required|numeric|gte:0',
+			'descuento_global' 	=> 'required|numeric|gte:0',
 			'valor_descuentoGlobal' => 'required|numeric|gte:0',
-			'descuento_total' => 'required|numeric|gte:0',
+			'descuento_total' 	=> 'required|numeric|gte:0',
 
 			//CLAVE PRODUCTS
-			'products' => 'required|array',
+			'products' 				=> 'required|array',
 			'products.*.product_id' => 'required|exists:products,id',
-			'products.*.cantidad' => 'required|numeric|gt:0',
+			'products.*.cantidad' 	=> 'required|numeric|gt:0',
 			'products.*.precio_unitario' => 'required|numeric|gte:0',
-			'products.*.descuento' => 'required|numeric|gte:0',
+			'products.*.descuento' 	=> 'required|numeric|gte:0',
 			'products.*.valor_descuento' => 'required|numeric|gte:0',
-			'products.*.subtotal' => 'required|numeric|gte:0',
-			'products.*.impuestos' => 'required|numeric|gte:0',
+			'products.*.subtotal' 	=> 'required|numeric|gte:0',
+			'products.*.impuestos' 	=> 'required|numeric|gte:0',
 			'products.*.precio_total' => 'required|numeric|gte:0',
 		]);
 
@@ -129,17 +129,17 @@ class SaleController extends Controller
 		], 200);
 	}
 
-
+ 	// funcion encontrada en 3uschool no tocar
 	public function generatePDF($id)
 	{
-		$sale = Sale::with('customer')->findOrFail($id);
-		$company = auth()->user()->company;
-		$items = $sale->productSale;
+		$sale 		= Sale::with('customer')->findOrFail($id);
+		$company 	= auth()->user()->company;
+		$items 		= $sale->productSale;
 
 		/* CALCULAR ALTURA */
-		$alturaItems = count($items) * 4 * 2;
-		$largoInicial = 200;
-		$largoTotal = $largoInicial + $alturaItems;
+		$alturaItems 	= count($items) * 4 * 2;
+		$largoInicial 	= 200;
+		$largoTotal 	= $largoInicial + $alturaItems;
 
 		$pdf = new PDF_Code128('P', 'mm', array(80, $largoTotal));
 		$pdf->SetMargins(4, 8, 4);

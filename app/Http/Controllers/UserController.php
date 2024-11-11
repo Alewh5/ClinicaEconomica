@@ -19,9 +19,9 @@ class UserController extends Controller
 		$user = User::findOrFail($id);
 		
 		$request->validate([
-			'nombre' => 'required|string|max:50',
-			'email' => 'required|email|unique:users,email,'.$user->id,
-			'telefono' => 'nullable|numeric',
+			'nombre' 	=> 'required|string|max:50',
+			'email' 	=> 'required|email|unique:users,email,'.$user->id,
+			'telefono' 	=> 'nullable|numeric',
 			'direccion' => 'nullable|string|max:255',
 		]);
 		

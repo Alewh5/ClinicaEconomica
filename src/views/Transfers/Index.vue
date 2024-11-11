@@ -1,48 +1,3 @@
-<script setup>
-import axios from 'axios';
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { confirmation, sendRequest } from '../../function';
-import VPagination from "@hennge/vue3-pagination";
-
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const transfers = ref([]);
-const search = ref('');
-
-//PAGINATION
-let load = ref(false);
-let currentPage = ref();
-let totalRecords = ref(0);
-let totalPages = ref();
-let perPage = ref(5);
-
-const getTransfers = async (page) => {
-    const response = await axios.get(`/transfers?page=${page}&per_page=${perPage.value}&search=${search.value}`);
-    transfers.value = response.data.data;
-    currentPage.value = response.data.current_page;
-    totalRecords.value = response.data.total;
-    load.value = true;
-    totalPages = Math.ceil(totalRecords.value / perPage.value);
-}
-
-const searchData = () => {
-    loadData(1);
-};
-
-const loadData = async (newPage) => {
-    if (newPage) {
-        currentPage.value = newPage;
-    }
-
-    await getTransfers(currentPage.value);
-}
-
-onMounted(() => { loadData(1) });
-</script>
-
 <template>
     <h3 class="flex items-center text-2xl mb-2 font-semibold text-gray-700">
         Listado de Traslados
@@ -175,3 +130,47 @@ onMounted(() => { loadData(1) });
 </template>
 
 <style scoped></style>
+<script setup>
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { confirmation, sendRequest } from '../../function';
+import VPagination from "@hennge/vue3-pagination";
+
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const transfers = ref([]);
+const search = ref('');
+
+//PAGINATION
+let load = ref(false);
+let currentPage = ref();
+let totalRecords = ref(0);
+let totalPages = ref();
+let perPage = ref(5);
+
+const getTransfers = async (page) => {
+    const response = await axios.get(`/transfers?page=${page}&per_page=${perPage.value}&search=${search.value}`);
+    transfers.value = response.data.data;
+    currentPage.value = response.data.current_page;
+    totalRecords.value = response.data.total;
+    load.value = true;
+    totalPages = Math.ceil(totalRecords.value / perPage.value);
+}
+
+const searchData = () => {
+    loadData(1);
+};
+
+const loadData = async (newPage) => {
+    if (newPage) {
+        currentPage.value = newPage;
+    }
+
+    await getTransfers(currentPage.value);
+}
+
+onMounted(() => { loadData(1) });
+</script>

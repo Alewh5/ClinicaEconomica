@@ -36,27 +36,27 @@ class InvoiceController extends Controller
 	{
 		//VALIDACIONES
 		$request->validate([
-			'provider_id' => 'required|exists:providers,id',
-			'codigo' => 'required|unique:invoices,codigo',
-			'fechaEmision' => 'required|date',
-			'metodoPago' => 'required|in:Efectivo,Nequi,Tarjeta,Credito',
-			'subTotal' => 'required|numeric|gte:0',
-			'impuestos' => 'required|numeric|gte:0',
-			'total' => 'required|numeric|gte:0',
-			'descuento_global' => 'required|numeric|gte:0',
+			'provider_id' 			=> 'required|exists:providers,id',
+			'codigo' 				=> 'required|unique:invoices,codigo',
+			'fechaEmision' 			=> 'required|date',
+			'metodoPago' 			=> 'required|in:Efectivo,Nequi,Tarjeta,Credito',
+			'subTotal' 				=> 'required|numeric|gte:0',
+			'impuestos' 			=> 'required|numeric|gte:0',
+			'total' 				=> 'required|numeric|gte:0',
+			'descuento_global' 		=> 'required|numeric|gte:0',
 			'valor_descuentoGlobal' => 'required|numeric|gte:0',
-			'descuento_total' => 'required|numeric|gte:0',
+			'descuento_total' 		=> 'required|numeric|gte:0',
 
 			//CLAVE PRODUCTS
-			'products' => 'required|array',
-			'products.*.product_id' => 'required|exists:products,id',
-			'products.*.cantidad' => 'required|numeric|gt:0',
+			'products' 					=> 'required|array',
+			'products.*.product_id' 	=> 'required|exists:products,id',
+			'products.*.cantidad' 		=> 'required|numeric|gt:0',
 			'products.*.precio_unitario' => 'required|numeric|gte:0',
-			'products.*.descuento' => 'required|numeric|gte:0',
+			'products.*.descuento' 		=> 'required|numeric|gte:0',
 			'products.*.valor_descuento' => 'required|numeric|gte:0',
-			'products.*.subtotal' => 'required|numeric|gte:0',
-			'products.*.impuestos' => 'required|numeric|gte:0',
-			'products.*.precio_total' => 'required|numeric|gte:0',
+			'products.*.subtotal' 		=> 'required|numeric|gte:0',
+			'products.*.impuestos' 		=> 'required|numeric|gte:0',
+			'products.*.precio_total' 	=> 'required|numeric|gte:0',
 		]);
 
 		$cellar = Cellar::where('predeterminada', 1)->first();
@@ -113,8 +113,8 @@ class InvoiceController extends Controller
 		$hasRefunds = $invoice->refunds()->exists();
 
 		return response()->json([
-			'invoice' => $invoice,
-			'hasRefunds' => $hasRefunds
+			'invoice' 		=> $invoice,
+			'hasRefunds' 	=> $hasRefunds
 		], 200);
 	}
 }

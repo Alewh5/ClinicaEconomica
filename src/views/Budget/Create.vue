@@ -1,25 +1,3 @@
-<script setup>
-import { ref } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const id = authStore.authCompany.id;
-
-const form = ref({ company_id: id, fecha: new Date().toISOString().split('T')[0], tipoMovimiento: 1, concepto: '', monto: '' });
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('POST', form.value, '/budgets', '/budgets');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -151,3 +129,24 @@ const save = async () => {
         </div>
     </div>
 </template>
+<script setup>
+import { ref } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const id = authStore.authCompany.id;
+
+const form = ref({ company_id: id, fecha: new Date().toISOString().split('T')[0], tipoMovimiento: 1, concepto: '', monto: '' });
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('POST', form.value, '/budgets', '/budgets');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+</script>

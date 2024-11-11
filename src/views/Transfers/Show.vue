@@ -1,26 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({});
-
-const id = ref(route.params.id);
-const getTransfer = () => {
-    axios.get('/transfers/' + id.value).then(
-        response => (form.value = response.data)
-    )
-}
-
-onMounted(() => { getTransfer() });
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -190,3 +167,25 @@ onMounted(() => { getTransfer() });
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({});
+
+const id = ref(route.params.id);
+const getTransfer = () => {
+    axios.get('/transfers/' + id.value).then(
+        response => (form.value = response.data)
+    )
+}
+
+onMounted(() => { getTransfer() });
+</script>

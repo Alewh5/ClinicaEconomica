@@ -1,64 +1,3 @@
-<script setup>
-import axios from 'axios';
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { confirmation, sendRequest } from '../../function';
-import VPagination from "@hennge/vue3-pagination";
-
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const cellars = ref([]);
-const search = ref('');
-
-//PAGINATION
-let load = ref(false);
-let currentPage = ref();
-let totalRecords = ref(0);
-let totalPages = ref();
-let perPage = ref(5);
-
-const getCellars = async (page) => {
-    const response = await axios.get(`/cellars?
-    page=${page}&per_page=${perPage.value}&search=${search.value}`);
-    cellars.value = response.data.data;
-    currentPage.value = response.data.current_page;
-    totalRecords.value = response.data.total;
-    load.value = true;
-    totalPages = Math.ceil(totalRecords.value / perPage.value);
-}
-
-const searchData = () => {
-    loadData(1);
-};
-
-const loadData = async (newPage) => {
-    if (newPage) {
-        currentPage.value = newPage;
-    }
-
-    await getCellars(currentPage.value);
-}
-
-/* PREDETERMINAR BODEGA */
-const setDefault = async (cellarId) => {
-    const { status } = await sendRequest('POST', {}, '/cellars/' + cellarId, '');
-    if (status === 200) {
-        await loadData();
-    }
-}
-
-/* DELETE ITEMS */
-const deleteItem = async (id, name) => {
-    confirmation(name, ('/cellars/' + id), '', async () => {
-        await loadData(1);
-    });
-}
-
-onMounted(() => { loadData(1) });
-</script>
-
 <template>
     <h3 class="flex items-center text-2xl mb-2 font-semibold text-gray-700">
         Listado de Bodegas
@@ -219,3 +158,63 @@ onMounted(() => { loadData(1) });
 </template>
 
 <style scoped></style>
+<script setup>
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { confirmation, sendRequest } from '../../function';
+import VPagination from "@hennge/vue3-pagination";
+
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const cellars = ref([]);
+const search = ref('');
+
+//PAGINATION
+let load = ref(false);
+let currentPage = ref();
+let totalRecords = ref(0);
+let totalPages = ref();
+let perPage = ref(5);
+
+const getCellars = async (page) => {
+    const response = await axios.get(`/cellars?
+    page=${page}&per_page=${perPage.value}&search=${search.value}`);
+    cellars.value = response.data.data;
+    currentPage.value = response.data.current_page;
+    totalRecords.value = response.data.total;
+    load.value = true;
+    totalPages = Math.ceil(totalRecords.value / perPage.value);
+}
+
+const searchData = () => {
+    loadData(1);
+};
+
+const loadData = async (newPage) => {
+    if (newPage) {
+        currentPage.value = newPage;
+    }
+
+    await getCellars(currentPage.value);
+}
+
+/* PREDETERMINAR BODEGA */
+const setDefault = async (cellarId) => {
+    const { status } = await sendRequest('POST', {}, '/cellars/' + cellarId, '');
+    if (status === 200) {
+        await loadData();
+    }
+}
+
+/* DELETE ITEMS */
+const deleteItem = async (id, name) => {
+    confirmation(name, ('/cellars/' + id), '', async () => {
+        await loadData(1);
+    });
+}
+
+onMounted(() => { loadData(1) });
+</script>

@@ -1,19 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useSidebar } from '../composables/useSidebar'
-import { useAuthStore } from '../auth.js';
-const authStore = useAuthStore();
-
-const { isOpen } = useSidebar()
-const activeClass = ref(
-  'bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100',
-)
-const inactiveClass = ref(
-  'border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100',
-)
-
-</script>
-
 <template>
   <div class="flex">
     <!-- Backdrop -->
@@ -137,4 +121,20 @@ const inactiveClass = ref(
 
       </nav>
     </div>
-  </div></template>
+  </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useSidebar } from '../composables/useSidebar'
+import { useAuthStore } from '../auth.js';
+const authStore = useAuthStore();
+
+const { isOpen } = useSidebar()
+const activeClass = ref(
+  'bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100',
+)
+const inactiveClass = ref(
+  'border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100',
+)
+
+</script>

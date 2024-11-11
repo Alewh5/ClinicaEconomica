@@ -1,69 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { component as VueNumber } from '@coders-tm/vue-number-format'
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({ cellar_origen_id: '', fecha_traslado: new Date().toISOString().split('T')[0], cellar_destino_id: '', detalles: '', products: [] });
-
-const cellars = ref([]);
-const search = ref('');
-const productosFiltrados = ref([]);
-
-/* CARGA DE BODEGAS */
-const getCellars = async (page) => {
-    const response = await axios.get(`/cellars?page=${page}`);
-    cellars.value = response.data.data;
-}
-
-/* LISTAR PRODUCTOS */
-const buscarProducto = async () => {
-    const response = await axios.get(`/searchProduct?search=${search.value}`);
-    productosFiltrados.value = response.data;
-}
-
-const datalocal = ref([]);
-
-const agregarProducto = (product) => {
-    const existingProductIndex = form.value.products.findIndex(p => p.product_id === product.id);
-
-    if (existingProductIndex !== -1) {
-        form.value.products[existingProductIndex].cantidad++;
-    } else {
-        form.value.products.push({
-            product_id: product.id,
-            cantidad: 1,
-        });
-
-        datalocal.value.push({
-            product_codigo: product.codigo,
-            product_descripcion: product.descripcion,
-            product_marca: product.marca,
-            product_categoria: product.categoria,
-        });
-    }
-
-    search.value = '';
-}
-
-const eliminarProducto = async (index) => {
-    form.value.products.splice(index, 1);
-}
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('POST', form.value, '/transfers', '/transfers');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-
-onMounted(() => { getCellars(1) });
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="sm:text-2xl text-lg font-semibold text-gray-700">
@@ -307,3 +241,68 @@ onMounted(() => { getCellars(1) });
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { component as VueNumber } from '@coders-tm/vue-number-format'
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({ cellar_origen_id: '', fecha_traslado: new Date().toISOString().split('T')[0], cellar_destino_id: '', detalles: '', products: [] });
+
+const cellars = ref([]);
+const search = ref('');
+const productosFiltrados = ref([]);
+
+/* CARGA DE BODEGAS */
+const getCellars = async (page) => {
+    const response = await axios.get(`/cellars?page=${page}`);
+    cellars.value = response.data.data;
+}
+
+/* LISTAR PRODUCTOS */
+const buscarProducto = async () => {
+    const response = await axios.get(`/searchProduct?search=${search.value}`);
+    productosFiltrados.value = response.data;
+}
+
+const datalocal = ref([]);
+
+const agregarProducto = (product) => {
+    const existingProductIndex = form.value.products.findIndex(p => p.product_id === product.id);
+
+    if (existingProductIndex !== -1) {
+        form.value.products[existingProductIndex].cantidad++;
+    } else {
+        form.value.products.push({
+            product_id: product.id,
+            cantidad: 1,
+        });
+
+        datalocal.value.push({
+            product_codigo: product.codigo,
+            product_descripcion: product.descripcion,
+            product_marca: product.marca,
+            product_categoria: product.categoria,
+        });
+    }
+
+    search.value = '';
+}
+
+const eliminarProducto = async (index) => {
+    form.value.products.splice(index, 1);
+}
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('POST', form.value, '/transfers', '/transfers');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+
+onMounted(() => { getCellars(1) });
+</script>

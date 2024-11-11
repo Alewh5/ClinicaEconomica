@@ -18,14 +18,14 @@ class CompanyController extends Controller
         $company = Company::findOrFail($id);
 
         $request->validate([
-            'nit' => 'numeric|min:00000000001|max:99999999999',
-            'nombre' => 'string',
-            'direccion' => 'string',
-            'telefono' => 'numeric|min:00000000001|max:99999999999',
-            'email' => 'email',
-            'sitio_web' => 'nullable|string',
-			'municipio' => 'string',
-			'departamento' => 'string',
+            'nit'           => 'numeric|min:00000000001|max:99999999999',
+            'nombre'        => 'string',
+            'direccion'     => 'string',
+            'telefono'      => 'numeric|min:00000000001|max:99999999999',
+            'email'         => 'email',
+            'sitio_web'     => 'nullable|string',
+			'municipio'     => 'string',
+			'departamento'  => 'string',
 			'codigo_postal' => 'integer'
         ]);
 

@@ -1,33 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../auth.js';
-import { sendRequest } from '../../function';
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const authStore = useAuthStore();
-
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
-
-const form = ref({ company_id: authStore.user.company_id, nombre: '', ubicacion: '', detalles: '' });
-
-const id = ref(route.params.id);
-const getCellars = () => {
-    axios.get('/cellars/' + id.value).then(
-        response => (form.value = response.data)
-    )
-}
-
-const formErrors = ref({});
-const save = async () => {
-    const { status, list_errors } = await sendRequest('PUT', form.value, '/cellars/' + id.value, '/cellars');
-    if (status == 422) {
-        formErrors.value = list_errors;
-    }
-}
-
-onMounted(() => { getCellars() });
-</script>
-
 <template>
     <div class="flex justify-between items-center">
         <h3 class="text-2xl font-semibold text-gray-700">
@@ -128,3 +98,32 @@ onMounted(() => { getCellars() });
         </div>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../../auth.js';
+import { sendRequest } from '../../function';
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const authStore = useAuthStore();
+
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+
+const form = ref({ company_id: authStore.user.company_id, nombre: '', ubicacion: '', detalles: '' });
+
+const id = ref(route.params.id);
+const getCellars = () => {
+    axios.get('/cellars/' + id.value).then(
+        response => (form.value = response.data)
+    )
+}
+
+const formErrors = ref({});
+const save = async () => {
+    const { status, list_errors } = await sendRequest('PUT', form.value, '/cellars/' + id.value, '/cellars');
+    if (status == 422) {
+        formErrors.value = list_errors;
+    }
+}
+
+onMounted(() => { getCellars() });
+</script>

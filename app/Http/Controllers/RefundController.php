@@ -38,16 +38,16 @@ class RefundController extends Controller
 	{
 		//VALIDACIONES
 		$request->validate([
-			'sale_id' => 'nullable|exists:sales,id',
-			'invoice_id' => 'nullable|exists:invoices,id',
-			'motivo' => 'required|max:30',
-			'fecha' => 'date|required',
-			'total' => 'required|numeric|gt:0',
+			'sale_id' 		=> 'nullable|exists:sales,id',
+			'invoice_id' 	=> 'nullable|exists:invoices,id',
+			'motivo' 		=> 'required|max:30',
+			'fecha' 		=> 'date|required',
+			'total' 		=> 'required|numeric|gt:0',
 
-			'products' => 'required|array',
-			'products.*.product_id' => 'required|exists:products,id',
-			'products.*.cantidad' => 'required|numeric|gte:0',
-			'products.*.precio_total' => 'required|numeric|gte:0',
+			'products' 					=> 'required|array',
+			'products.*.product_id' 	=> 'required|exists:products,id',
+			'products.*.cantidad' 		=> 'required|numeric|gte:0',
+			'products.*.precio_total' 	=> 'required|numeric|gte:0',
 		]);
 
 		$cellar = Cellar::where('predeterminada', 1)->first();
@@ -175,23 +175,23 @@ class RefundController extends Controller
 			}
 		
 			return [
-				'product_id' => $refundProduct->id,
-				'codigo' => $refundProduct->codigo ?? null, 
-				'descripcion' => $refundProduct->descripcion ?? null,
-				'cantidad' => $refundProduct->pivot->cantidad,
-				'precio_total' => $refundProduct->pivot->precio_total,
+				'product_id' 	=> $refundProduct->id,
+				'codigo' 		=> $refundProduct->codigo ?? null, 
+				'descripcion' 	=> $refundProduct->descripcion ?? null,
+				'cantidad' 		=> $refundProduct->pivot->cantidad,
+				'precio_total' 	=> $refundProduct->pivot->precio_total,
 				'precio_unitario' => $relatedProduct->pivot->precio_unitario ?? null,
-				'descuento' => $relatedProduct->pivot->descuento ?? null,
-				'impuestos' => $relatedProduct->pivot->impuestos ?? null,
+				'descuento' 	=> $relatedProduct->pivot->descuento ?? null,
+				'impuestos' 	=> $relatedProduct->pivot->impuestos ?? null,
 				'valor_descuento' => $relatedProduct->pivot->valor_descuento ?? null,
-				'subtotal' => $relatedProduct->pivot->subtotal ?? null, // Agregar subtotal
+				'subtotal' 		=> $relatedProduct->pivot->subtotal ?? null, // Agregar subtotal
 			];
 		});		
 
 		return response()->json([
 			'refund' => [
 				'id' => $refund->id,
-				'amount' => $refund, // Asegúrate de incluir otros campos necesarios
+				'amount' => $refund, // 
 				'product_refund' => $refundDetails, // Productos del refund con sus detalles
 			],
 			'relatedData' => $relatedData
