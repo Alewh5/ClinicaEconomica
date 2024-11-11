@@ -70,29 +70,53 @@ class ProductController extends Controller
     public function searchProduct(Request $request)
     {
         $search = $request->input('search');
-
+    
         $productsQuery = Product::query();
-        $productsQuery->select('products.id', 'products.codigo', 'products.descripcion', 'products.precio', 'products.iva_compra', 'products.iva_venta', 'products.marca', 'products.categoria', 'products.estado');
+        $productsQuery->select(
+            'products.id', 
+            'products.codigo', 
+            'products.descripcion', 
+            'products.precio', 
+            'products.iva_compra', 
+            'products.iva_venta', 
+            'products.marca', 
+            'products.categoria', 
+            'products.estado'
+        );
         $productsQuery->selectRaw('SUM(cellar_product.cantidad) AS Cantidad_Total');
         $productsQuery->leftJoin('cellar_product', 'products.id', '=', 'cellar_product.product_id');
-        $productsQuery->groupBy('products.id', 'products.descripcion', 'products.precio');
+    
+        // Incluir todos los campos del SELECT en el GROUP BY
+        $productsQuery->groupBy(
+            'products.id', 
+            'products.codigo', 
+            'products.descripcion', 
+            'products.precio', 
+            'products.iva_compra', 
+            'products.iva_venta', 
+            'products.marca', 
+            'products.categoria', 
+            'products.estado'
+        );
+    
         // Filtrar solo productos activos
         $productsQuery->whereNotIn('products.estado', ['en espera', 'descontinuado']);
-
+    
         if ($search) {
             $searchableFields = ['codigo', 'descripcion', 'marca', 'categoria']; // Campos que se pueden buscar
-
+    
             $productsQuery->where(function ($query) use ($searchableFields, $search) {
                 foreach ($searchableFields as $field) {
                     $query->orWhere($field, 'LIKE', '%' . $search . '%');
                 }
             });
         }
-
+    
         $productsQuery = $productsQuery->get();
-
+    
         return response()->json($productsQuery);
     }
+    
 
     public function store(Request $request)
     {
