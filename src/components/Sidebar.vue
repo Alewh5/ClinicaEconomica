@@ -49,7 +49,7 @@ const inactiveClass = ref(
             <path d="M12 2.25195C14.8113 2.97552 17.0245 5.18877 17.748 8.00004H12V2.25195Z" fill="currentColor" />
           </svg>
 
-          <span class="mx-4">Dashboard</span>
+          <span class="mx-4">Menu Principal</span>
         </router-link>
 
         <div class="flex items-center px-6 py-4 text-sm text-gray-500">Terceros</div>

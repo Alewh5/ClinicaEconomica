@@ -14,12 +14,42 @@ class ProductController extends Controller
         $search = $request->input('search');
         $perPage = $request->input('per_page', 5);
         $productsQuery = Product::query();
+        
+        // Obtener el ID de la bodega predeterminada
         $defaultCellarId = Cellar::where('predeterminada', 1)->value('id');
-        $productsQuery->select('products.id', 'products.codigo', 'products.descripcion', 'products.precio', 'products.iva_compra', 'products.iva_venta', 'products.marca', 'products.categoria', 'products.estado');
-        // Sumar la cantidad solo para la bodega predeterminada
-        $productsQuery->selectRaw('SUM(CASE WHEN cellar_product.cellar_id = ? THEN cellar_product.cantidad ELSE 0 END) AS Cantidad_Total', [$defaultCellarId]);
+        
+        // Seleccionar campos y sumar la cantidad
+        $productsQuery->select(
+            'products.id',
+            'products.codigo',
+            'products.descripcion',
+            'products.precio',
+            'products.iva_compra',
+            'products.iva_venta',
+            'products.marca',
+            'products.categoria',
+            'products.estado'
+        );
+        
+        $productsQuery->selectRaw(
+            'SUM(CASE WHEN cellar_product.cellar_id = ? THEN cellar_product.cantidad ELSE 0 END) AS Cantidad_Total',
+            [$defaultCellarId]
+        );
+        
         $productsQuery->leftJoin('cellar_product', 'products.id', '=', 'cellar_product.product_id');
-        $productsQuery->groupBy('products.id', 'products.descripcion', 'products.precio');
+        
+        // Incluir todas las columnas en la cláusula group by
+        $productsQuery->groupBy(
+            'products.id',
+            'products.codigo',
+            'products.descripcion',
+            'products.precio',
+            'products.iva_compra',
+            'products.iva_venta',
+            'products.marca',
+            'products.categoria',
+            'products.estado'
+        );
 
         if ($search) {
             $searchableFields = ['codigo', 'descripcion', 'tipo_producto', 'precio', 'marca', 'categoria'];
@@ -31,6 +61,7 @@ class ProductController extends Controller
             });
         }
 
+        // Paginar los resultados
         $productsQuery = $productsQuery->paginate($perPage);
 
         return response()->json($productsQuery);

@@ -20,14 +20,14 @@ let totalPages = ref();
 let perPage = ref(5);
 
 const getProducts = async (page) => {
-    const response = await axios.get(`/products?
-    page=${page}&per_page=${perPage.value}&search=${search.value}`);
+    const response = await axios.get(`/products?page=${page}&per_page=${perPage.value}&search=${search.value}`);
     products.value = response.data.data;
     currentPage.value = response.data.current_page;
     totalRecords.value = response.data.total;
     load.value = true;
     totalPages = Math.ceil(totalRecords.value / perPage.value);
-}
+};
+
 
 const searchData = () => {
     loadData(1);

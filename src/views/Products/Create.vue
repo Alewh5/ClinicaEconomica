@@ -11,7 +11,7 @@ const form = ref({
     codigo: '',
     descripcion: '',
     precio: '',
-    iva_compra: '19.00',
+    iva_compra: '13.00',
     iva_venta: '19.00',
     marca: '',
     categoria: '',
@@ -143,7 +143,7 @@ const save = async () => {
                             <select class="w-full bg-white rounded-r-md pl-2 text-base font-regular outline-0"
                                 :class="{ 'border-red-500 border-2': formErrors['iva_compra'] }" id="iva_compra"
                                 v-model="form.iva_compra">
-                                <option value="19.00">19%</option>
+                                <option value="13.00">13%</option>
                                 <option value="15.00">15%</option>
                                 <option value="0.00">EXENTO</option>
                                 <option value="0.00">EXCLUIDO</option>
@@ -169,7 +169,7 @@ const save = async () => {
                             <select class="w-full bg-white rounded-r-md pl-2 text-base font-regular outline-0"
                                 :class="{ 'border-red-500 border-2': formErrors['iva_venta'] }" id="iva_venta"
                                 v-model="form.iva_venta">
-                                <option value="19.00">19%</option>
+                                <option value="13.00">13%</option>
                                 <option value="15.00">15%</option>
                                 <option value="0.00">EXENTO</option>
                                 <option value="0.00">EXCLUIDO</option>

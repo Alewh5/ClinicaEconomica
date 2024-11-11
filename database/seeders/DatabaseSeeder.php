@@ -15,19 +15,19 @@ class DatabaseSeeder extends Seeder
 
         $company = \App\Models\Company::create([
             'nit' => 1005663635,
-            'nombre' => 'Company 1',
+            'nombre' => 'ClinicaEconomica',
             'direccion' => 'Cra 10',
             'telefono' => 3013673743,
             'email' => 'info@company.com',
-			'municipio' => 'Sincelejo',
-			'departamento' => 'Sucre',
-			'codigo_postal' => '700003',
+			'municipio' => 'Ilopango',
+			'departamento' => 'San Salvador',
+			'codigo_postal' => '503',
         ]);
 
         $user = \App\Models\User::factory()->create([
 			'company_id' => $company->id,
-            'nombre' => 'Test User',
-            'email' => 'test@example.com',
+            'nombre' => 'Mary ',
+            'email' => 'walejandroh95@gmail.com',
             'password' => bcrypt('12345678'),
         ]);
         
