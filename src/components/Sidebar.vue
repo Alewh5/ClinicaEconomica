@@ -68,6 +68,20 @@
           <span class="mx-4">Proveedores</span>
         </router-link>
 
+        <router-link class="flex items-center px-6 py-2 duration-200 border-l-4"
+          :class="[($route.name === 'Users' || $route.name === 'users-Create' || $route.name === 'users-Edit') ? activeClass : inactiveClass]"
+          to="/users">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people"
+            viewBox="0 0 16 16">
+            <path
+              d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+            <path
+              d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4" />
+          </svg>
+
+          <span class="mx-4">Usuarios</span>
+        </router-link>
+
         <div class="flex items-center px-6 py-4 text-sm text-gray-500">Inventario</div>
 
         <router-link class="flex items-center px-6 py-2 duration-200 border-l-4"
@@ -124,10 +138,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useSidebar } from '../composables/useSidebar'
+import { ref, computed } from 'vue';
+import { useSidebar } from '../composables/useSidebar';
 import { useAuthStore } from '../auth.js';
+
 const authStore = useAuthStore();
+const userRole = computed(() => authStore.user.role);
 
 const { isOpen } = useSidebar()
 const activeClass = ref(

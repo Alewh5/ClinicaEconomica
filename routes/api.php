@@ -99,7 +99,7 @@ Route::group(['prefix' => 'v1'], function () {
 		Route::get('payments', [PaymentController::class, 'index']);
 		Route::post('payments', [PaymentController::class, 'store']);
     });
-
+	Route::resource('users', UserController::class);
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
 });
