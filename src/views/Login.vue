@@ -41,7 +41,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '../auth.js';
+import { useRouter } from 'vue-router';
+
 const authStore = useAuthStore();
+const router = useRouter();
 
 const form = ref({ email: '', password: '' });
 
@@ -51,6 +54,17 @@ const login = async () => {
   const response = await authStore.login(form.value);
   if (response) {
     formErrors.value = response.list_errors;
+  }
+  else {
+    // Obtener el rol del usuario desde el authStore después del login exitoso
+    const role = authStore.user.role; // Ajusta esto según cómo tengas estructurado tu authStore
+
+    // Redirigir basado en el rol
+    if (role === 'admin') {
+      router.push({ name: 'Dashboard' });
+    } else if (role === 'vendedor') {
+      router.push({ name: 'DashboardVend' });
+    }
   }
 }
 </script>

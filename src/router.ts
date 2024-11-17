@@ -2,6 +2,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from './auth.js'
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from './views/Dashboard.vue'
+import DashboardVend from './views/DashboardVend.vue'
 import Login from './views/Login.vue'
 
 const routes: RouteRecordRaw[] = [
@@ -25,7 +26,7 @@ const routes: RouteRecordRaw[] = [
   },
 
    //PROFILE
-   {
+  {
     path: '/settings/edit',
     name: 'Settings-Edit',
     component: () => import('./views/Settings/Edit.vue'),
@@ -38,6 +39,12 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'Dashboard',
     component: Dashboard,
+  },
+
+  {
+    path: '/',
+    name: 'DashboardVend',
+    component: DashboardVend,
   },
 
   //BUDGET

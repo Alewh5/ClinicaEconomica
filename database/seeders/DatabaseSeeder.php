@@ -26,14 +26,14 @@ class DatabaseSeeder extends Seeder
 
         $user = \App\Models\User::factory()->create([ // USUARIO ADMINISTRADOR
 			'company_id' => $company->id,
-            // 'rol' => 'admin', // rol administrador
+            'role' => 'admin', // rol administrador
             'nombre' => 'Mary ',
             'email' => 'walejandroh95@gmail.com',
             'password' => bcrypt('12345678'),
         ]);
         $user = \App\Models\User::factory()->create([ // USUARIO VENDEDOR
 			'company_id' => $company->id,
-            // 'rol' => 'vendedor', // rol administrador
+            'role' => 'vendedor', // rol administrador
             'nombre' => 'Harold ',
             'email' => 'haroldalexis1667@gmail.com',
             'password' => bcrypt('Amanecerdel33'),

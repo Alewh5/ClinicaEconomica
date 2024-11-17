@@ -44,8 +44,14 @@ class AuthController extends Controller
 			$user = Auth::user();
 			$company = Company::find($user->company_id);
 			$token = $user->createToken('token-name')->plainTextToken;
+			$role = $user->role; //
 
-			return response()->json(['user' => $user, 'company' => $company, 'token' => $token], 200);
+			return response()->json([
+				'user' => $user,
+				'company' => $company,
+				'role' => $role,
+				'token' => $token
+			], 200);
 		}
 
 		$user = User::where('email', $request->email)->first();
