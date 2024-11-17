@@ -235,6 +235,12 @@ const routes: RouteRecordRaw[] = [
     name: 'Refunds-Invoices-Create',
     component: () => import('./views/Refunds/Create.vue'),
   },
+  // no acceso
+  {
+    path: '/acceso_denegado',
+    name: 'acceso_denegado',
+    component: () => import('./views/accesoprohibido/index.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -243,17 +249,26 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicPages = ['/login']
-  const authRequired = !publicPages.includes(to.path)
-  const auth = useAuthStore()
+  const publicPages = ['/login'];
+  const authRequired = !publicPages.includes(to.path);
+  const auth = useAuthStore();
   if (authRequired && !auth.user) {
-    auth.returnUrl = to.fullPath
-    next('/login');
-  } else if(!authRequired && auth.user){
-    next('/');
-  } else {
-    next();
+    auth.returnUrl = to.fullPath;
+    return next('/login');
   }
-});
+  if (!authRequired && auth.user) {
+    return next('/');
+  }
+
+  if (auth.user.role === 'vendedor') {
+    if (to.path.startsWith('/users')) {
+      return next('/acceso_denegado');
+    }
+    if (to.path.startsWith('/budgets/create')) {
+      return next('/acceso_denegado');
+    }
+  }
+  next();
+})
 
 export default router

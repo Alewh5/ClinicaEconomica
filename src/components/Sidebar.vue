@@ -68,7 +68,9 @@
           <span class="mx-4">Proveedores</span>
         </router-link>
 
-        <router-link class="flex items-center px-6 py-2 duration-200 border-l-4"
+        <router-link 
+        v-if="userRole === 'admin'"
+        class="flex items-center px-6 py-2 duration-200 border-l-4"
           :class="[($route.name === 'Users' || $route.name === 'users-Create' || $route.name === 'users-Edit') ? activeClass : inactiveClass]"
           to="/users">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people"
