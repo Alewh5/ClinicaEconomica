@@ -252,23 +252,29 @@ router.beforeEach(async (to, from, next) => {
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
   const auth = useAuthStore();
+
   if (authRequired && !auth.user) {
     auth.returnUrl = to.fullPath;
     return next('/login');
   }
+
   if (!authRequired && auth.user) {
     return next('/');
   }
 
-  if (auth.user.role === 'vendedor') {
-    if (to.path.startsWith('/users')) {
-      return next('/acceso_denegado');
-    }
-    if (to.path.startsWith('/budgets/create')) {
-      return next('/acceso_denegado');
+  // Verificación de roles solo si hay un usuario autenticado
+  if (auth.user) {
+    if (auth.user.role === 'vendedor') {
+      if (to.path.startsWith('/users')) {
+        return next('/acceso_denegado');
+      }
+      if (to.path.startsWith('/budgets/create')) {
+        return next('/acceso_denegado');
+      }
     }
   }
+
   next();
-})
+});
 
 export default router
