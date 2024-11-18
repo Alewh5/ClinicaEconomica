@@ -46,6 +46,7 @@
         </div>
         <div class="flex w-26 flex-col sm:flex-row items-center">
             <router-link
+                v-if="userRole === 'admin'"
                 class="inline-flex items-center w-full sm:mt-0 mt-1 px-2 py-1 ml-2 bg-blue-600 transition ease-in-out delay-75 hover:bg-blue-700 text-white text-sm font-medium rounded-md"
                 to="/budgets/create">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-plus-circle-fill mr-2 h-4 w-4"
@@ -123,11 +124,12 @@
 <style scoped></style>
 <script setup>
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '../../auth.js';
 import { confirmation, sendRequest } from '../../function';
 import VPagination from "@hennge/vue3-pagination";
 
+const userRole = computed(() => authStore.user.role);
 const authStore = useAuthStore();
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
