@@ -4,10 +4,10 @@ import createPersistedState from 'pinia-plugin-persistedstate'
 
 import App from './App.vue'
 import router from './router'
-import axios from 'axios';
+import axios from 'axios'
 
 import './assets/main.css'
-import "@hennge/vue3-pagination/dist/vue3-pagination.css";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css"
 
 import DashboardLayout from './components/DashboardLayout.vue'
 import EmptyLayout from './components/EmptyLayout.vue'
@@ -19,19 +19,15 @@ declare global {
     }
 }
 
-// Configuración de axios
-const axiosInstance = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api/v1/',
-    withCredentials: true,
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-    }
-});
+// Configuración global de axios
+axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1/';
+axios.defaults.withCredentials = true;
+axios.defaults.headers['Accept'] = 'application/json';
+axios.defaults.headers['Content-Type'] = 'application/json';
+axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest';
 
-// Asignación a window.axios
-window.axios = axiosInstance;
+// Asignación a window.axios (si quieres acceder desde la consola o en otros lugares)
+window.axios = axios;
 
 // PINIA
 const pinia = createPinia()
