@@ -1,1 +1,6 @@
 node_modules
+# Ignorar la carpeta de construcción
+dist/
+
+# Ignorar el archivo de configuración de entorno
+.env
