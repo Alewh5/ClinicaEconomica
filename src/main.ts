@@ -20,7 +20,7 @@ declare global {
 }
 
 // Configuración global de axios
-axios.defaults.baseURL = 'http://farmaciaesperanza.top//api/v1/';
+axios.defaults.baseURL = 'http://farmaciaesperanza.top/api/v1/';
 axios.defaults.withCredentials = true;
 axios.defaults.headers['Accept'] = 'application/json';
 axios.defaults.headers['Content-Type'] = 'application/json';
