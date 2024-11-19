@@ -1,20 +1,44 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useSidebar } from '../composables/useSidebar'
+import { ref, onMounted } from 'vue';
+import { useSidebar } from '../composables/useSidebar';
 import { useAuthStore } from '../auth.js';
-const authStore = useAuthStore();
+import axios from 'axios';
 
-const dropdownOpen = ref(false)
-const { isOpen } = useSidebar()
+interface AuthCompany {
+  id: string | number;
+  presupuesto: number;
+}
 
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+interface AuthStore {
+  logout(): unknown;
+  authToken: string | null;
+  authCompany: AuthCompany | null;
+}
+
+const authStore = useAuthStore() as AuthStore;
+const dropdownOpen = ref(false);
+const { isOpen } = useSidebar();
+
+if (authStore.authToken) {
+  axios.defaults.headers.common['Authorization'] = 'Bearer ' + authStore.authToken;
+} else {
+  console.warn("authToken no está definido.");
+}
 
 const getPresupuesto = async () => {
-  const response = await axios.get(`/companies/${authStore.authCompany.id}`);
-  if (response.status === 200) {
-    authStore.authCompany.presupuesto = response.data.presupuesto;
+  if (authStore.authCompany) {
+    try {
+      const response = await axios.get(`/companies/${authStore.authCompany.id}`);
+      if (response.status === 200) {
+        authStore.authCompany.presupuesto = response.data.presupuesto;
+      }
+    } catch (error) {
+      console.error("Error al obtener el presupuesto:", error);
+    }
+  } else {
+    console.warn("authCompany es null, no se puede obtener el presupuesto.");
   }
-}
+};
 
 onMounted(() => {
   getPresupuesto();
@@ -34,7 +58,14 @@ onMounted(() => {
     </div>
 
     <div class="flex items-center">
-      <router-link :to="{ name: 'Budget' }"><span class="font-bold">Presupuesto: </span>{{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(authStore.company.presupuesto) }}</router-link>
+      <router-link :to="{ name: 'Budget' }">
+        <span class="font-bold">Presupuesto: </span>
+        {{
+          authStore.authCompany
+            ? Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(authStore.authCompany.presupuesto)
+            : 'N/A'
+        }}
+      </router-link>
 
       <button class="flex mx-4 text-gray-600 focus:outline-none">
         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +92,7 @@ onMounted(() => {
             <router-link :to="{ name: 'Profile-Edit' }" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">Profile</router-link>
             <router-link :to="{ name: 'Settings-Edit' }" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">Settings</router-link>
             <a @click="authStore.logout()" class="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">
-              Log out
+              Cerrar sesión
             </a>
           </div>
         </transition>

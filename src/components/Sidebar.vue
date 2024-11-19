@@ -20,7 +20,7 @@
             <path d="M12 9h2V8h-2z" />
           </svg>
 
-          <span class="mx-2 text-2xl font-semibold text-white">{{ authStore.company.nombre }}</span>
+          <span class="mx-2 text-2xl font-semibold text-white">{{ authStore.company?.nombre || 'Sin nombre' }}</span>
         </div>
       </div>
 
@@ -145,7 +145,9 @@ import { useSidebar } from '../composables/useSidebar';
 import { useAuthStore } from '../auth.js';
 
 const authStore = useAuthStore();
-const userRole = computed(() => authStore.user.role);
+const userRole = computed(() => {
+  return authStore.user ? authStore.user.role : 'sin rol';
+});
 
 const { isOpen } = useSidebar()
 const activeClass = ref(

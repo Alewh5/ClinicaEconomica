@@ -4,7 +4,7 @@ import createPersistedState from 'pinia-plugin-persistedstate'
 
 import App from './App.vue'
 import router from './router'
-import axios from 'axios'
+import axios from 'axios';
 
 import './assets/main.css'
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
@@ -12,13 +12,26 @@ import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import DashboardLayout from './components/DashboardLayout.vue'
 import EmptyLayout from './components/EmptyLayout.vue'
 
-// AXIOS
-window.axios = axios
-window.axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1/'
-window.axios.defaults.headers.common['Accept'] = 'application/json'
-window.axios.defaults.headers.common['Content-Type'] = 'application/json'
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-window.axios.defaults.headers.withCredentials = true
+// Declaración más específica que resuelve el problema de tipos
+declare global {
+    interface Window {
+        axios: any; // Temporalmente usamos 'any' para evitar el error de tipos
+    }
+}
+
+// Configuración de axios
+const axiosInstance = axios.create({
+    baseURL: 'http://127.0.0.1:8000/api/v1/',
+    withCredentials: true,
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+});
+
+// Asignación a window.axios
+window.axios = axiosInstance;
 
 // PINIA
 const pinia = createPinia()
@@ -29,13 +42,10 @@ pinia.use(createPersistedState)
 
 const app = createApp(App)
 
-// COMPONENTES GLOBALES
 app.component('DefaultLayout', DashboardLayout)
 app.component('EmptyLayout', EmptyLayout)
 
-// USO DE PINIA Y ROUTER
 app.use(pinia)
 app.use(router)
 
-// MONTAJE DE LA APLICACIÓN
 app.mount('#app')
