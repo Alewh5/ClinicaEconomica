@@ -5,13 +5,11 @@ import { defineStore } from 'pinia';
  * @typedef {Object} User
  * @property {string} role
  * @property {string} name
- * // Agrega aquí otras propiedades que tenga tu usuario
  */
 
 /**
  * @typedef {Object} Company
  * @property {string} nombre
- * // Agrega aquí otras propiedades que tenga tu compañía
  */
 
 /**
@@ -24,7 +22,7 @@ import { defineStore } from 'pinia';
 /**
  * @typedef {Object} ErrorResponse
  * @property {number} status
- * @property {Object} list_errors
+ * @property {Object} errors
  */
 
 export const useAuthStore = defineStore('auth', {
@@ -59,10 +57,10 @@ export const useAuthStore = defineStore('auth', {
                 this.authUser = response.data.user;
                 this.authCompany = response.data.company;
                 this.router.push('/');
-            } catch (errors) {
-                const status = errors.response.status;
-                const list_errors = errors.response.data.errors;
-                return { status, list_errors };
+            } catch (error) {
+                const status = error.response.status;
+                const errors = error.response.data.errors;
+                return { status, errors };
             }
         },
         /**
@@ -76,10 +74,10 @@ export const useAuthStore = defineStore('auth', {
                 this.authToken = response.data.token;
                 this.authUser = response.data.user;
                 this.router.push('/');
-            } catch (errors) {
-                const status = errors.response.status;
-                const list_errors = errors.response.data.errors;
-                return { status, list_errors };
+            } catch (error) {
+                const status = error.response.status;
+                const errors = error.response.data.errors;
+                return { status, errors };
             }
         },
         /** @returns {Promise<void>} */
@@ -93,4 +91,4 @@ export const useAuthStore = defineStore('auth', {
         },
     },
     persist: true
-})
+});

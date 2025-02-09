@@ -187,6 +187,49 @@
                     </div>
 
                     <div>
+                        <label class="text-gray-700" for="venta_fraccionaria">Venta Fraccionaria <span
+                                v-if="formErrors['venta_fraccionaria']" class="text-red-500 mt-1 text-sm">*</span></label>
+                        <div class="flex mt-2">
+                            <div
+                                class="flex items-center justify-center rounded-tl-lg rounded-bl-lg border-y border-l relative border-gray-400 bg-white p-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                    class="bi bi-check2-square pointer-events-none absolute w-5 h-5 fill-gray-500 transition"
+                                    viewBox="0 0 16 16">
+                                    <path
+                                        d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z" />
+                                    <path
+                                        d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0" />
+                                </svg>
+                            </div>
+                            <select class="w-full bg-white rounded-r-md pl-2 text-base font-regular outline-0"
+                                :class="{ 'border-red-500 border-2': formErrors['venta_fraccionaria'] }" id="venta_fraccionaria"
+                                v-model="form.venta_fraccionaria">
+                                <option value="0">NO</option>
+                                <option value="1">SI</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-if="form.venta_fraccionaria == 1">
+                        <label class="text-gray-700" for="cantidad">cantidad <span v-if="formErrors['cantidad']"
+                                class="text-red-500 mt-1 text-sm">*</span></label>
+                        <div class="flex mt-2">
+                            <div
+                                class="flex items-center justify-center rounded-tl-lg rounded-bl-lg border-y border-l relative border-gray-400 bg-white p-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                    class="bi bi-alphabet-uppercase pointer-events-none absolute w-5 h-5 fill-gray-500 transition"
+                                    viewBox="0 0 16 16">
+                                    <path
+                                        d="M1.226 10.88H0l2.056-6.26h1.42l2.047 6.26h-1.29l-.48-1.61H1.707l-.48 1.61ZM2.76 5.818h-.054l-.75 2.532H3.51zm3.217 5.062V4.62h2.56c1.09 0 1.808.582 1.808 1.54 0 .762-.444 1.22-1.05 1.372v.055c.736.074 1.365.587 1.365 1.528 0 1.119-.89 1.766-2.133 1.766zM7.18 5.55v1.675h.8c.812 0 1.171-.308 1.171-.853 0-.51-.328-.822-.898-.822zm0 2.537V9.95h.903c.951 0 1.342-.312 1.342-.909 0-.591-.382-.954-1.095-.954zm5.089-.711v.775c0 1.156.49 1.803 1.347 1.803.705 0 1.163-.454 1.212-1.096H16v.12C15.942 10.173 14.95 11 13.607 11c-1.648 0-2.573-1.073-2.573-2.849v-.78c0-1.775.934-2.871 2.573-2.871 1.347 0 2.34.849 2.393 2.087v.115h-1.172c-.05-.665-.516-1.156-1.212-1.156-.849 0-1.347.67-1.347 1.83" />
+                                </svg>
+                            </div>
+                            <input type="text" class="w-full bg-white rounded-r-md pl-2 text-base font-regular outline-0"
+                                :class="{ 'border-red-500 border-2': formErrors['cantidad'] }" id="cantidad"
+                                v-model="form.cantidad" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div>
                         <label class="text-gray-700" for="estado">Estado <span
                                 v-if="formErrors['estado']" class="text-red-500 mt-1 text-sm">*</span></label>
                         <div class="flex mt-2">
@@ -229,6 +272,7 @@ const form = ref({
     codigo: '',
     descripcion: '',
     precio: '',
+    venta_fraccionaria: 0,
     iva_compra: '13.00',
     iva_venta: '19.00',
     marca: '',

@@ -35,7 +35,6 @@
         <div class="px-4 pb-8 pt-5 bg-white shadow-md">
             <form>
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-
                     <div>
                         <label class="text-gray-700" for="cellar_origen_id">Bodega Origen <span v-if="formErrors['cellar_origen_id']"
                                 class="text-red-500 mt-1 text-sm">*</span></label>

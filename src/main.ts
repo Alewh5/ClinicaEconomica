@@ -20,7 +20,7 @@ declare global {
 }
 
 // Configuración global de axios
-axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://46.202.93.129:3000/api/v1/';
+axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1/';
 axios.defaults.withCredentials = true;
 axios.defaults.headers['Accept'] = 'application/json';
 axios.defaults.headers['Content-Type'] = 'application/json';

@@ -18,12 +18,14 @@
           <span class="text-sm text-gray-700">Email <span style="font-size: 9px; color: red;">*</span></span>
           <input v-model="form.email" type="email"
             class="block w-full mt-1 border-gray-200 rounded-md focus:border-indigo-600 focus:ring focus:ring-opacity-40 focus:ring-indigo-500">
+            <span v-if="formErrors.email" class="text-red-500 text-xs">{{ formErrors.email }}</span>
         </label>
 
         <label class="block mt-3">
           <span class="text-sm text-gray-700">Password <span style="font-size: 9px; color: red;">*</span></span>
           <input v-model="form.password" type="password"
             class="block w-full mt-1 border-gray-200 rounded-md focus:border-indigo-600 focus:ring focus:ring-opacity-40 focus:ring-indigo-500">
+            <span v-if="formErrors.password" class="text-red-500 text-xs">{{ formErrors.password }}</span>
         </label>
 
         <div class="mt-6">
@@ -46,23 +48,21 @@ const router = useRouter();
 
 const form = ref({ email: '', password: '' });
 
-const formErrors = ref<string[]>([]);
+const formErrors = ref<{ email?: string; password?: string }>({});
 
 const login = async () => {
   const response = await authStore.login(form.value);
-  if (response) {
-    formErrors.value = Object.values(response.list_errors);
-  }
-  else {
-    // Obtener el rol del usuario desde el authStore después del login exitoso
-    const role = authStore.user ? authStore.user.role : null; // Ajusta esto según cómo tengas estructurado tu authStore
 
-    // Redirigir basado en el rol
+  if (response && response.errors) {
+    formErrors.value.email = response.errors.email ? response.errors.email[0] : '';
+    formErrors.value.password = response.errors.password ? response.errors.password[0] : '';
+  } else {
+    const role = authStore.user ? authStore.user.role : null;
     if (role === 'admin') {
       router.push({ name: 'Dashboard' });
     } else if (role === 'vendedor') {
       router.push({ name: 'DashboardVend' });
     }
   }
-}
+};
 </script>
